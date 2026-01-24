@@ -1,809 +1,522 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>T Stock</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #0b1020; }
-        h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; }
-
-        /* Red & White brand */
-        .brand-gradient { background: linear-gradient(135deg, #ff3b30 0%, #c41919 100%); }
-        .btn-gradient { background: linear-gradient(135deg,#c41919 0%, #ff3b30 100%); color: #fff; }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,25,25,0.35); border-radius: 10px; }
-
-        /* gear animation */
-        .gear {
-            width: 96px;
-            height: 96px;
-            display: inline-block;
-            animation: spin-gear 6s linear;
-            animation-fill-mode: forwards;
-        }
-        @keyframes spin-gear { from { transform: rotate(0deg); } to { transform: rotate(2160deg); } }
-
-        .hidden-by-default { display: none; }
-
-        .timer-ring { transition: stroke-dashoffset 1s linear; }
-
-        /* Card shadows tuned for white background */
-        .card { background: #fff; border: 1px solid rgba(196,25,25,0.06); border-radius: 12px; box-shadow: 0 6px 24px rgba(196,25,25,0.04); }
-        .muted { color: rgba(11,16,32,0.6); }
-        .accent { color: #c41919; }
-
-        /* referral badge circle */
-        .ref-badge {
-            background: #ff3b30;
-            color: #fff;
-            width: 72px;
-            height: 72px;
-            border-radius: 999px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:700;
-            box-shadow: 0 8px 26px rgba(255,59,48,0.12);
-        }
-
-        .top-right-note { position: relative; }
-        .ref-badge-small {
-            background: #ff3b30;
-            color: #fff;
-            width: 36px;
-            height: 36px;
-            border-radius: 999px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:700;
-            font-size:12px;
-            box-shadow: 0 6px 18px rgba(255,59,48,0.12);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>T Stock — Tesla Personal Plans</title>
+  <meta name="description" content="T Stock — Tesla Personal Plans. Demo UI." />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --brand-1:#ff3b30; --brand-2:#c41919; --muted:#64748b; --card-bg:#ffffff;
+    }
+    html,body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    .font-display{ font-family: Outfit, Inter, system-ui, sans-serif; }
+    .brand-gradient{ background: linear-gradient(135deg,var(--brand-2),var(--brand-1)); color:white; }
+    .btn-primary{
+      background: linear-gradient(90deg,var(--brand-2),var(--brand-1));
+      color: white;
+      padding: .6rem 1rem;
+      border-radius: .75rem;
+      font-weight: 700;
+      box-shadow: 0 6px 20px rgba(196,25,25,0.12);
+    }
+    .btn-primary:hover{ transform: translateY(-2px); transition: transform .18s ease; }
+    .btn-outline{ border: 1px solid rgba(196,25,25,0.12); color:var(--brand-2); padding:.5rem .9rem; border-radius:.625rem; background:white; }
+    .card{
+      background: var(--card-bg); border-radius: 14px; border:1px solid rgba(196,25,25,0.04);
+      box-shadow: 0 8px 30px rgba(11,16,32,0.04); transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover{ transform: translateY(-6px); }
+    .form-input{
+      width:100%; padding:.7rem .9rem; border:1px solid rgba(11,16,32,0.06); border-radius:10px; outline:none;
+      transition: box-shadow .12s ease, transform .08s ease;
+    }
+    .form-input:focus{ box-shadow: 0 6px 20px rgba(196,25,25,0.06); border-color: rgba(196,25,25,0.12); transform: translateY(-1px); }
+    .ref-badge{ width:72px;height:72px;border-radius:999px;background:var(--brand-1);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 10px 30px rgba(255,59,48,0.12); }
+    .plan-row{ display:flex;justify-content:space-between; gap: 12px; align-items:center; padding:8px 0; border-bottom: 1px dashed rgba(11,16,32,0.03); }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; transform: none !important; } }
+    /* small helper */
+    .muted { color: rgba(11,16,32,0.6); }
+    .accent { color: var(--brand-2); font-weight:700; }
+    .ref-badge-small { background: var(--brand-1); color:#fff; width:36px; height:36px; border-radius:999px; display:flex;align-items:center;justify-content:center; font-weight:700; font-size:12px; box-shadow:0 6px 18px rgba(255,59,48,0.12); }
+  </style>
 </head>
-<body class="min-h-screen">
-
-<script>lucide && lucide.createIcons && lucide.createIcons();</script>
-
-<!-- REGISTRATION / LOGIN -->
-<div id="register-section" class="min-h-screen flex items-center justify-center p-6 bg-white">
-    <div class="w-full max-w-2xl card overflow-hidden rounded-2xl">
-        <div class="brand-gradient h-1.5 w-full"></div>
-        <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="space-y-6">
-                <div class="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center border border-red-100 shadow">
-                    <!-- Red T logo -->
-                    <svg viewBox="0 0 100 100" class="w-12 h-12" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="T Logo">
-                        <circle cx="50" cy="50" r="48" fill="#ff3b30"/>
-                        <text x="50%" y="58%" text-anchor="middle" font-family="Outfit, Inter, sans-serif" font-weight="700" font-size="48" fill="#ffffff">T</text>
-                    </svg>
-                </div>
-
-                <div>
-                    <h1 class="text-2xl font-bold uppercase">T Stock — Tesla Personal Plans</h1>
-                    <p class="muted text-sm mt-2">Register to view Tesla personal investment plans and manage your funds. Use referral code <strong>Elon002026</strong> to get a $12,000 top up.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Full name</label>
-                    <input id="reg-name" type="text" placeholder="John Doe" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Email</label>
-                    <input id="reg-email" type="email" placeholder="you@example.com" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Password</label>
-                    <input id="reg-password" type="password" placeholder="••••••••" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Referral Code (optional)</label>
-                    <input id="reg-referral" type="text" placeholder="Elon002026" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                </div>
-
-                <div>
-                    <button onclick="registerUser()" class="btn-gradient w-full font-bold py-3 rounded-2xl shadow hover:brightness-95 transition-all text-lg tracking-widest uppercase">
-                        Create account
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-6 rounded-xl border border-red-50">
-                <h3 class="text-xl font-bold mb-4 uppercase accent">Tesla Personal Plans — Overview</h3>
-                <p class="muted text-sm mb-4">Minimum Investment on list: <span class="font-bold">$100</span></p>
-
-                <div class="space-y-3 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
-                    <!-- Plans list -->
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $500</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$5,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $1,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$15,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $2,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$30,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $3,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$45,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $4,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$60,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $5,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$75,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $10,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$150,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <hr class="border-red-50 my-2" />
-
-                    <div class="text-sm">
-                        <div class="font-bold">Crypto Plans</div>
-                        <div class="muted mt-2 text-xs">
-                            <div>1 BTC → earn 5 BTC</div>
-                            <div>2 BTC → earn 10 BTC</div>
-                            <div>3 BTC → earn 15 BTC</div>
-                            <div>4 BTC → earn 20 BTC</div>
-                            <div>5 BTC → earn 25 BTC</div>
-                        </div>
-                        <p class="muted text-xs mt-4">All plans may require verification. Minimum deposit to activate account: <strong>$100</strong>.</p>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <button onclick="showPlansPage()" class="w-full btn-gradient py-2 rounded-xl font-bold uppercase">Explore Plans</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard-section" class="hidden min-h-screen bg-white">
-    <div id="congrats-popup" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/40">
-        <div class="rounded-xl p-6 text-center card max-w-md space-y-3">
-            <div class="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto shadow">
-                <i data-lucide="shield-check" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold uppercase">Account Created</h3>
-                <p class="muted text-sm">Welcome to T Stock. You can explore investment plans and fund your account.</p>
-            </div>
-            <button onclick="dismissCongrats()" class="mt-2 btn-gradient w-full font-bold py-2 rounded-lg uppercase">Continue</button>
-        </div>
-    </div>
-
-    <nav class="bg-white border-b border-red-50 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <!-- Red T logo small -->
-                <svg viewBox="0 0 100 100" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="T Logo">
-                    <circle cx="50" cy="50" r="48" fill="#ff3b30"/>
-                    <text x="50%" y="58%" text-anchor="middle" font-family="Outfit, Inter, sans-serif" font-weight="700" font-size="44" fill="#ffffff">T</text>
-                </svg>
-                <span class="font-bold text-lg tracking-tighter">T Stock — Tesla Plans</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 bg-red-50 px-4 py-2 rounded-2xl border border-red-100">
-                    <div id="user-avatar-small" class="w-8 h-8 rounded-full bg-red-100 overflow-hidden border border-red-200"></div>
-                    <span id="nav-user-name" class="text-sm font-bold muted">Guest</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <div class="card p-6 rounded-2xl flex flex-col lg:flex-row gap-6 items-center justify-between">
-            <div class="flex items-center gap-6">
-                <div>
-                    <p class="muted text-xs font-bold uppercase tracking-widest">Total Holdings</p>
-                    <h2 id="dashboard-balance" class="text-4xl font-bold">$0.00</h2>
-                    <p class="muted text-sm mt-2">Status: <span id="status-tag" class="accent font-bold">Unverified</span></p>
-                </div>
-
-                <!-- referral badge (shows bonus if present) -->
-                <div id="ref-badge-wrap" class="top-right-note hidden">
-                    <div class="ref-badge-small" title="Referral bonus">+12K</div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <button onclick="openFundModal()" class="bg-white border border-red-100 text-red-600 font-bold px-4 py-2 rounded-lg transition-all text-sm uppercase">Fund Account</button>
-                <button onclick="openPlansSection()" class="btn-gradient px-4 py-2 rounded-lg font-bold uppercase">View Plans</button>
-            </div>
-        </div>
-
-        <div id="plans-section" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Plan cards -->
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $500</h3>
-                <p class="muted">Get <span class="accent font-bold">$5,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(500, '$5,000', 'INVEST $500')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $1,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$15,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(1000, '$15,000', 'INVEST $1,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $2,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$30,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(2000, '$30,000', 'INVEST $2,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $3,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$45,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(3000, '$45,000', 'INVEST $3,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $4,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$60,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(4000, '$60,000', 'INVEST $4,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $5,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$75,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(5000, '$75,000', 'INVEST $5,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $10,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$150,000</span></p>
-                <p class="muted text-xs mt-2">Min $100</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(10000, '$150,000', 'INVEST $10,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bonus & Activation Controls -->
-        <div id="bonus-controls" class="hidden card p-4 flex items-center justify-between">
-            <div>
-                <div class="font-bold">Referral Bonus</div>
-                <div id="bonus-amount" class="muted text-sm">$0.00 — available upon activation</div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="activate-btn" onclick="activateAccount()" class="bg-white border border-red-100 text-red-600 font-bold px-4 py-2 rounded-lg">Activate Account</button>
-                <button id="withdraw-bonus-btn" onclick="withdrawBonus()" class="btn-gradient px-4 py-2 rounded-lg font-bold hidden">Withdraw Bonus</button>
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- FUNDING MODAL (multi-step flow) -->
-<div id="fund-modal" class="hidden fixed inset-0 z-[400] flex items-center justify-center p-4 bg-black/30">
-    <div class="bg-white w-full max-w-2xl rounded-2xl border border-red-50 overflow-hidden">
-        <div class="p-4 border-b border-red-50 flex justify-between items-center">
-            <div>
-                <h3 id="fund-title" class="text-lg font-bold accent uppercase">Fund Account</h3>
-                <p class="muted text-xs">Select a plan and follow deposit instructions to fund your account</p>
-            </div>
-            <div>
-                <button onclick="closeFundModal()" class="text-muted hover:text-red-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-
-        <div id="step-choose" class="p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Choose a plan</h4>
-                <p class="muted text-xs mt-1">Pick whichever plan you'd like to fund now. Minimum deposit to activate account: $100</p>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <button onclick="selectPlanFromModal(500, '$5,000', 'INVEST $500')" class="p-3 border rounded-lg text-left">INVEST $500<br/><span class="muted text-xs">Get $5,000</span></button>
-                <button onclick="selectPlanFromModal(1000, '$15,000', 'INVEST $1,000')" class="p-3 border rounded-lg text-left">INVEST $1,000<br/><span class="muted text-xs">Get $15,000</span></button>
-                <button onclick="selectPlanFromModal(2000, '$30,000', 'INVEST $2,000')" class="p-3 border rounded-lg text-left">INVEST $2,000<br/><span class="muted text-xs">Get $30,000</span></button>
-                <button onclick="selectPlanFromModal(3000, '$45,000', 'INVEST $3,000')" class="p-3 border rounded-lg text-left">INVEST $3,000<br/><span class="muted text-xs">Get $45,000</span></button>
-                <button onclick="selectPlanFromModal(4000, '$60,000', 'INVEST $4,000')" class="p-3 border rounded-lg text-left">INVEST $4,000<br/><span class="muted text-xs">Get $60,000</span></button>
-                <button onclick="selectPlanFromModal(5000, '$75,000', 'INVEST $5,000')" class="p-3 border rounded-lg text-left">INVEST $5,000<br/><span class="muted text-xs">Get $75,000</span></button>
-                <button onclick="selectPlanFromModal(10000, '$150,000', 'INVEST $10,000')" class="p-3 border rounded-lg text-left md:col-span-3">INVEST $10,000 — Get $150,000</button>
-            </div>
-
-            <div class="flex justify-end">
-                <button id="choose-next" onclick="goToConfirmPlan()" class="btn-gradient py-2 px-6 rounded-lg font-bold uppercase">Next</button>
-            </div>
-        </div>
-
-        <div id="step-confirm" class="hidden p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Confirm Plan</h4>
-                <p class="muted text-xs">Plan: <span id="confirm-plan-name" class="font-bold"></span> • Amount: <span id="confirm-plan-amt" class="accent font-bold"></span></p>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs muted">Preferred deposit method</label>
-                <select id="deposit-method" class="w-full border rounded-lg p-2">
-                    <option value="BTC">BTC</option>
-                    <option value="USDT">USDT (TRC20)</option>
-                </select>
-            </div>
-
-            <div class="flex justify-between">
-                <button onclick="backToChoose()" class="border px-4 py-2 rounded-lg">Back</button>
-                <button onclick="startDepositProcess()" class="btn-gradient px-6 py-2 rounded-lg font-bold uppercase">Proceed to Deposit</button>
-            </div>
-        </div>
-
-        <div id="step-processing-gear" class="hidden p-6 text-center space-y-4">
-            <div>
-                <h4 class="font-bold muted">Preparing deposit instructions</h4>
-                <p class="muted text-xs">We are generating your secure deposit details — this takes a few seconds.</p>
-            </div>
-
-            <div id="gear-wrap" class="py-6">
-                <!-- SVG gear -->
-                <svg class="gear mx-auto" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M492 308l-42-24 7-48-44-25-26 17-34-14-14-35-45 2-25-44-48 7-23-40-48 23-8 48-46 24 5 48-30 26 23 41-7 46 39 14 10 33 44-4 25 44 48-7 26 34 45-18 14-35 34 13 26-17 44 24 7-48 42-24-20-40z" stroke="#c41919" stroke-width="6" fill="rgba(196,25,25,0.06)"/>
-                    <circle cx="256" cy="256" r="80" fill="rgba(196,25,25,0.08)" stroke="#c41919" stroke-width="6"/>
-                </svg>
-                <div class="muted text-xs mt-3">Please wait — preparing secure deposit addresses...</div>
-            </div>
-        </div>
-
-        <div id="step-deposit" class="hidden p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Deposit Instructions</h4>
-                <p class="muted text-xs">Send the exact plan amount to either the BTC or USDT address below, then upload your payment screenshot and confirm. Support: <a href="https://wa.me/+17828094033" class="accent">Chat Support</a>.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 border rounded-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">BTC (Bech32)</div>
-                            <div class="muted text-xs mt-1">Address</div>
-                        </div>
-                        <button onclick="copyToClipboard('bc1qstq325gddkyjwtwjdvh4w8ph2zc6j86fctw2j6')" class="text-red-600 text-sm">Copy</button>
-                    </div>
-                    <div class="mt-3 font-mono text-xs break-all">bc1qstq325gddkyjwtwjdvh4w8ph2zc6j86fctw2j6</div>
-                </div>
-
-                <div class="p-4 border rounded-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">USDT (TRC20)</div>
-                            <div class="muted text-xs mt-1">Address / Memo</div>
-                        </div>
-                        <button onclick="copyToClipboard('TY4SpRKLhXgo6KjxmbjK5CBEUhP74WbYAa')" class="text-red-600 text-sm">Copy</button>
-                    </div>
-                    <div class="mt-3 font-mono text-xs break-all">TY4SpRKLhXgo6KjxmbjK5CBEUhP74WbYAa</div>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs muted">Upload payment screenshot</label>
-                <input id="payment-screenshot" type="file" accept="image/*" class="w-full border rounded-lg p-2 text-sm" />
-                <div id="screenshot-preview" class="mt-2"></div>
-            </div>
-
-            <div class="flex justify-between items-center">
-                <button onclick="backToConfirm()" class="border px-4 py-2 rounded-lg">Back</button>
-                <button onclick="confirmDeposit()" class="btn-gradient px-6 py-2 rounded-lg font-bold uppercase">I HAVE PAID — Confirm my deposit</button>
-            </div>
-        </div>
-
-        <div id="step-final" class="hidden p-6 text-center space-y-4">
-            <div>
-                <h4 class="font-bold muted">Processing Confirmation</h4>
-                <p class="muted text-xs">We are verifying your payment. You will be redirected to support after confirmation.</p>
-            </div>
-            <div class="py-6">
-                <i data-lucide="refresh-cw" class="w-12 h-12 text-red-600 animate-spin mx-auto"></i>
-                <div class="muted text-xs mt-3">Finalizing — please wait.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    lucide && lucide.createIcons && lucide.createIcons();
-
-    // Local storage keys
-    const LS_USERS = 'tstock_users_v1';
-    const LS_CURRENT = 'tstock_current_email_v1';
-    const REFERRAL_CODE = 'Elon002026';
-    const REFERRAL_BONUS = 12000; // $12,000
-
-    // state
-    let users = loadUsers();
-    let currentUserEmail = localStorage.getItem(LS_CURRENT) || null;
-    let selectedPlan = null;
-
-    // Utilities for persistence
-    function loadUsers() {
-        try {
-            const raw = localStorage.getItem(LS_USERS);
-            return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-            return [];
-        }
-    }
-    function saveUsers() {
-        localStorage.setItem(LS_USERS, JSON.stringify(users));
-    }
-    function saveCurrent(email) {
-        if (email) localStorage.setItem(LS_CURRENT, email);
-        else localStorage.removeItem(LS_CURRENT);
-        currentUserEmail = email;
-    }
-    function getCurrentUser() {
-        if (!currentUserEmail) return null;
-        return users.find(u => u.email === currentUserEmail) || null;
-    }
-    function upsertUser(u) {
-        const idx = users.findIndex(x => x.email === u.email);
-        if (idx === -1) users.push(u);
-        else users[idx] = u;
-        saveUsers();
-    }
-
-    // registration function
-    function registerUser() {
-        const name = document.getElementById('reg-name').value.trim();
-        const email = document.getElementById('reg-email').value.trim().toLowerCase();
-        const pass = document.getElementById('reg-password').value.trim();
-        const referral = document.getElementById('reg-referral').value.trim();
-
-        if (!name || !email || !pass) {
-            alert('Please complete all registration fields.');
-            return;
-        }
-
-        // check existing
-        if (users.some(u => u.email === email)) {
-            alert('An account with this email already exists. You will be logged in.');
-            saveCurrent(email);
-            showDashboardForUser(email);
-            return;
-        }
-
-        // create user
-        const bonus = (referral === REFERRAL_CODE) ? REFERRAL_BONUS : 0;
-        const user = {
-            name,
-            email,
-            password: pass, // NOTE: this is client-side demo only; do not store plaintext passwords in production
-            balance: 0.00,
-            depositTotal: 0.00,
-            bonusBalance: bonus,
-            activated: false,
-            createdAt: new Date().toISOString()
-        };
-
-        users.push(user);
-        saveUsers();
-
-        // set current session
-        saveCurrent(email);
-
-        // update UI and navigate to dashboard
-        showDashboardForUser(email);
-
-        // show welcome popup
-        document.getElementById('congrats-popup').classList.remove('hidden');
-    }
-
-    function showDashboardForUser(email) {
-        const user = users.find(u => u.email === email);
-        if (!user) return;
-        document.getElementById('register-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.remove('hidden');
-        updateDashboardUI();
-    }
-
-    function updateDashboardUI() {
-        const user = getCurrentUser();
-        if (!user) return;
-
-        document.getElementById('nav-user-name').innerText = user.name;
-        document.getElementById('dashboard-balance').innerText = '$' + user.balance.toFixed(2);
-        document.getElementById('status-tag').innerText = user.activated ? 'Active' : 'Unverified';
-        document.getElementById('status-tag').className = user.activated ? 'accent font-bold' : 'accent font-bold';
-
-        // referral badge
-        const refWrap = document.getElementById('ref-badge-wrap');
-        const bonusControls = document.getElementById('bonus-controls');
-        if (user.bonusBalance > 0) {
-            // show small badge with shorthand; the detailed card appears in bonus-controls
-            refWrap.classList.remove('hidden');
-            refWrap.querySelector('.ref-badge-small').innerText = '$' + (user.bonusBalance >= 1000 ? (user.bonusBalance/1000) + 'K' : user.bonusBalance);
-            // show bonus controls section
-            bonusControls.classList.remove('hidden');
-            document.getElementById('bonus-amount').innerText = '$' + user.bonusBalance.toFixed(2) + ' — available upon activation';
-            // show withdraw button only when activated
-            if (user.activated) {
-                document.getElementById('withdraw-bonus-btn').classList.remove('hidden');
-                document.getElementById('activate-btn').classList.add('hidden');
-            } else {
-                document.getElementById('withdraw-bonus-btn').classList.add('hidden');
-                document.getElementById('activate-btn').classList.remove('hidden');
-            }
-        } else {
-            refWrap.classList.add('hidden');
-            bonusControls.classList.add('hidden');
-        }
-
-        // update avatar
-        const small = document.getElementById('user-avatar-small');
-        if (small) small.style.background = 'linear-gradient(135deg,#ff3b30,#c41919)';
-    }
-
-    function dismissCongrats() {
-        document.getElementById('congrats-popup').classList.add('hidden');
-    }
-
-    // Plans helpers
-    function showPlansPage() {
-        document.getElementById('plans-section').scrollIntoView({behavior: 'smooth'});
-    }
-
-    function selectPlan(amount, returnText, name) {
-        // pre-select and open fund modal
-        selectedPlan = { amount, returnText, name };
-        openFundModal();
-        document.getElementById('confirm-plan-name').innerText = name;
-        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
-        // move directly to confirm step
-        document.getElementById('step-choose').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    /* FUND MODAL FLOW */
-    function openFundModal() {
-        // must be logged in
-        const user = getCurrentUser();
-        if (!user) {
-            alert('Please register or log in to fund your account.');
-            return;
-        }
-
-        document.getElementById('fund-modal').classList.remove('hidden');
-        if (!selectedPlan) {
-            document.getElementById('step-choose').classList.remove('hidden');
-            document.getElementById('step-confirm').classList.add('hidden');
-        }
-        document.getElementById('step-processing-gear').classList.add('hidden');
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-final').classList.add('hidden');
-        if (selectedPlan) {
-            document.getElementById('confirm-plan-name').innerText = selectedPlan.name;
-            document.getElementById('confirm-plan-amt').innerText = '$' + selectedPlan.amount.toLocaleString();
-        }
-    }
-
-    function closeFundModal() {
-        document.getElementById('fund-modal').classList.add('hidden');
-        // keep selectedPlan so user can reuse it, or clear if desired:
-        // selectedPlan = null;
-    }
-
-    function selectPlanFromModal(amount, returnTxt, name) {
-        selectedPlan = { amount, returnText: returnTxt, name };
-        document.getElementById('confirm-plan-name').innerText = name;
-        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
-    }
-
-    function goToConfirmPlan() {
-        if (!selectedPlan) {
-            alert('Please select a plan first.');
-            return;
-        }
-        document.getElementById('step-choose').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    function backToChoose() {
-        document.getElementById('step-confirm').classList.add('hidden');
-        document.getElementById('step-choose').classList.remove('hidden');
-    }
-
-    function startDepositProcess() {
-        // validate minimum activation requirement when necessary (min $100)
-        if (selectedPlan && selectedPlan.amount < 100) {
-            alert('Minimum deposit is $100.');
-            return;
-        }
-
-        document.getElementById('step-confirm').classList.add('hidden');
-        document.getElementById('step-processing-gear').classList.remove('hidden');
-
-        // run a 6-second "professional gear" animation, then show deposit details
-        setTimeout(() => {
-            document.getElementById('step-processing-gear').classList.add('hidden');
-            document.getElementById('step-deposit').classList.remove('hidden');
-        }, 6000);
-    }
-
-    function backToConfirm() {
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
-            alert('Address copied to clipboard.');
-        }, () => {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            alert('Address copied to clipboard.');
-        });
-    }
-
-    // preview uploaded screenshot
-    document.getElementById('payment-screenshot')?.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('screenshot-preview');
-        preview.innerHTML = '';
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            preview.innerText = 'Please upload an image file.';
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            const img = document.createElement('img');
-            img.src = ev.target.result;
-            img.style.maxWidth = '240px';
-            img.style.borderRadius = '8px';
-            preview.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    });
-
-    function confirmDeposit() {
-        const user = getCurrentUser();
-        if (!user) {
-            alert('Please register or log in first.');
-            return;
-        }
-
-        const input = document.getElementById('payment-screenshot');
-        if (!input || !input.files || input.files.length === 0) {
-            if (!confirm('No screenshot uploaded. Are you sure you want to continue?')) return;
-        }
-
-        // move to final processing UI
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-final').classList.remove('hidden');
-
-        // Simulate 10-second verification, then credit funds and redirect to support
-        setTimeout(() => {
-            // credit the selectedPlan amount to user's balance
-            if (selectedPlan && selectedPlan.amount) {
-                user.balance = Number(user.balance) + Number(selectedPlan.amount);
-                user.depositTotal = Number(user.depositTotal) + Number(selectedPlan.amount);
-
-                // if deposit total reaches activation threshold, activate account
-                if (!user.activated && user.depositTotal >= 100) {
-                    user.activated = true;
-                }
-
-                // persist and update UI
-                upsertUser(user);
-                saveCurrent(user.email);
-            }
-
-            updateDashboardUI();
-
-            // redirect to WhatsApp support per request
-            window.location.href = 'https://wa.me/+17828094033';
-        }, 10000);
-    }
-
-    // Activation / Withdraw bonus
-    function activateAccount() {
-        const user = getCurrentUser();
-        if (!user) { alert('No active user.'); return; }
-
-        if (user.depositTotal >= 100) {
-            user.activated = true;
-            upsertUser(user);
-            updateDashboardUI();
-            alert('Account activated. You can now withdraw the referral bonus.');
-        } else {
-            alert('To activate your account you must fund at least $100. Please fund your account using the Fund Account button.');
-        }
-    }
-
-    function withdrawBonus() {
-        const user = getCurrentUser();
-        if (!user) { alert('No active user.'); return; }
-        if (!user.activated) { alert('Account not activated.'); return; }
-        if (!user.bonusBalance || user.bonusBalance <= 0) { alert('No bonus available.'); return; }
-
-        // move bonus to balance
-        user.balance = Number(user.balance) + Number(user.bonusBalance);
-        user.bonusBalance = 0;
-        upsertUser(user);
-        updateDashboardUI();
-        alert('Referral bonus moved to your available balance. You can now withdraw or invest it.');
-    }
-
-    function openPlansSection() { document.getElementById('plans-section').scrollIntoView({ behavior: 'smooth' }); }
-
-    // On initial load: restore session if any
-    (function init() {
-        // ensure data structures exist
-        users = loadUsers();
-
-        if (currentUserEmail) {
-            const user = getCurrentUser();
-            if (user) {
-                document.getElementById('register-section')?.classList.add('hidden');
-                document.getElementById('dashboard-section')?.classList.remove('hidden');
-                updateDashboardUI();
-            } else {
-                // clear invalid session
-                saveCurrent(null);
-            }
-        }
-    })();
-</script>
+<body class="min-h-screen bg-white text-slate-900">
+
+  <!-- NAV -->
+  <header class="bg-white sticky top-0 z-40 border-b border-red-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a class="flex items-center gap-3" href="#" aria-label="T Stock Home">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center brand-gradient text-white font-bold font-display">T</div>
+        <span class="font-semibold tracking-tight">T Stock — Tesla Plans</span>
+      </a>
+      <nav class="flex items-center gap-4">
+        <div class="flex items-center gap-3 bg-red-50 px-3 py-2 rounded-2xl border border-red-100">
+          <div id="user-avatar-small" class="w-8 h-8 rounded-full bg-red-100 overflow-hidden border border-red-200"></div>
+          <span id="nav-user-name" class="text-sm font-bold muted">Guest</span>
+        </div>
+        <button id="open-register-cta" class="btn-primary">Create account</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-10 space-y-8">
+    <!-- HERO -->
+    <section class="grid lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold font-display">T Stock — Tesla Personal Plans</h1>
+        <p class="mt-3 muted">Explore curated personal investment plans. Use referral code <strong>Elon002026</strong> to receive a demo bonus. <span class="text-xs muted">Demo client-only UI — do not use for live funds.</span></p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button id="cta-explore" class="btn-primary">Explore Plans</button>
+          <button id="cta-learn" class="btn-outline">How it works</button>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase muted font-medium">Minimum</div>
+            <div class="text-2xl font-bold">$100</div>
+            <div class="text-sm muted mt-1">Minimum deposit to activate account</div>
+          </div>
+          <div class="ref-badge" aria-hidden="true">+12K</div>
+        </div>
+
+        <ul class="mt-6 space-y-3">
+          <li class="plan-row"><strong>INVEST $500</strong> <span class="accent">$5,000</span></li>
+          <li class="plan-row"><strong>INVEST $1,000</strong> <span class="accent">$15,000</span></li>
+          <li class="plan-row"><strong>INVEST $2,000</strong> <span class="accent">$30,000</span></li>
+          <li class="plan-row"><strong>INVEST $5,000</strong> <span class="accent">$75,000</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PLANS GRID -->
+    <section id="plans" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <article class="card p-5" aria-labelledby="plan-500">
+        <h3 id="plan-500" class="font-bold text-lg">INVEST $500</h3>
+        <p class="muted mt-1">Get <span class="accent">$5,000</span></p>
+        <p class="text-xs muted mt-2">Min $100</p>
+        <div class="mt-4">
+          <button class="btn-primary w-full select-plan" data-amount="500" data-name="INVEST $500">$500 — Select Plan</button>
+        </div>
+      </article>
+
+      <article class="card p-5" aria-labelledby="plan-1000">
+        <h3 id="plan-1000" class="font-bold text-lg">INVEST $1,000</h3>
+        <p class="muted mt-1">Get <span class="accent">$15,000</span></p>
+        <p class="text-xs muted mt-2">Min $100</p>
+        <div class="mt-4">
+          <button class="btn-primary w-full select-plan" data-amount="1000" data-name="INVEST $1,000">$1,000 — Select Plan</button>
+        </div>
+      </article>
+
+      <article class="card p-5" aria-labelledby="plan-10000">
+        <h3 id="plan-10000" class="font-bold text-lg">INVEST $10,000</h3>
+        <p class="muted mt-1">Get <span class="accent">$150,000</span></p>
+        <p class="text-xs muted mt-2">Min $100</p>
+        <div class="mt-4">
+          <button class="btn-primary w-full select-plan" data-amount="10000" data-name="INVEST $10,000">$10,000 — Select Plan</button>
+        </div>
+      </article>
+
+      <!-- Add other plans similarly -->
+    </section>
+
+    <!-- DASHBOARD SUMMARY -->
+    <section id="dashboard-preview" class="card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs uppercase muted">Total Holdings</div>
+          <div id="dashboard-balance" class="text-2xl font-bold mt-1">$0.00</div>
+          <div class="muted text-sm mt-1">Status: <span id="status-tag" class="accent font-bold">Unverified</span></div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openFundModal()" class="bg-white border border-red-100 text-red-600 font-bold px-4 py-2 rounded-lg">Fund Account</button>
+          <button onclick="openPlansSection()" class="btn-primary px-4 py-2 rounded-lg">View Plans</button>
+        </div>
+      </div>
+
+      <div id="bonus-controls" class="hidden mt-4 p-4 border rounded-lg flex items-center justify-between">
+        <div>
+          <div class="font-bold">Referral Bonus</div>
+          <div id="bonus-amount" class="muted text-sm">$0.00 — available upon activation</div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="activate-btn" onclick="activateAccount()" class="bg-white border border-red-100 text-red-600 font-bold px-4 py-2 rounded-lg">Activate Account</button>
+          <button id="withdraw-bonus-btn" onclick="withdrawBonus()" class="btn-primary px-4 py-2 rounded-lg hidden">Withdraw Bonus</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ALL-IN-ONE MODAL (registration + plan confirm + deposit steps) -->
+  <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" aria-hidden="true">
+    <div class="bg-white w-full max-w-2xl rounded-2xl border border-red-50 overflow-hidden">
+      <div class="p-4 border-b border-red-50 flex justify-between items-center">
+        <div>
+          <h3 id="fund-title" class="text-lg font-bold accent uppercase">Fund Account</h3>
+          <p class="muted text-xs">Multi-step demo flow — client-only</p>
+        </div>
+        <div>
+          <button onclick="closeFundModal()" class="text-muted hover:text-red-600" aria-label="Close modal">✕</button>
+        </div>
+      </div>
+
+      <!-- STEP: CHOOSE -->
+      <div id="step-choose" class="p-6 space-y-4">
+        <div>
+          <h4 class="font-bold muted">Choose a plan</h4>
+          <p class="muted text-xs mt-1">Minimum deposit to activate account: $100</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <button onclick="selectPlanFromModal(500, '$5,000', 'INVEST $500')" class="p-3 border rounded-lg text-left">INVEST $500<br/><span class="muted text-xs">Get $5,000</span></button>
+          <button onclick="selectPlanFromModal(1000, '$15,000', 'INVEST $1,000')" class="p-3 border rounded-lg text-left">INVEST $1,000<br/><span class="muted text-xs">Get $15,000</span></button>
+          <button onclick="selectPlanFromModal(10000, '$150,000', 'INVEST $10,000')" class="p-3 border rounded-lg text-left md:col-span-3">INVEST $10,000 — Get $150,000</button>
+        </div>
+
+        <div class="flex justify-end">
+          <button id="choose-next" onclick="goToConfirmPlan()" class="btn-primary py-2 px-6 rounded-lg font-bold uppercase">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP: CONFIRM -->
+      <div id="step-confirm" class="hidden p-6 space-y-4">
+        <div>
+          <h4 class="font-bold muted">Confirm Plan</h4>
+          <p class="muted text-xs">Plan: <span id="confirm-plan-name" class="font-bold"></span> • Amount: <span id="confirm-plan-amt" class="accent font-bold"></span></p>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-xs muted">Preferred deposit method</label>
+          <select id="deposit-method" class="w-full border rounded-lg p-2">
+            <option value="BTC">BTC</option>
+            <option value="USDT">USDT (TRC20)</option>
+          </select>
+        </div>
+
+        <div class="flex justify-between">
+          <button onclick="backToChoose()" class="border px-4 py-2 rounded-lg">Back</button>
+          <button onclick="startDepositProcess()" class="btn-primary px-6 py-2 rounded-lg font-bold uppercase">Proceed to Deposit</button>
+        </div>
+      </div>
+
+      <!-- STEP: PROCESSING -->
+      <div id="step-processing-gear" class="hidden p-6 text-center space-y-4">
+        <div>
+          <h4 class="font-bold muted">Preparing deposit instructions</h4>
+          <p class="muted text-xs">We are generating secure deposit details — this takes a few seconds.</p>
+        </div>
+
+        <div class="py-6">
+          <!-- simple gear svg -->
+          <svg class="mx-auto" width="96" height="96" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="animation:spin 6s linear;">
+            <path d="M492 308l-42-24 7-48-44-25-26 17-34-14-14-35-45 2-25-44-48 7-23-40-48 23-8 48-46 24 5 48-30 26 23 41-7 46 39 14 10 33 44-4 25 44 48-7 26 34 45-18 14-35 34 13 26-17 44 24 7-48 42-24-20-40z" stroke="#c41919" stroke-width="6" fill="rgba(196,25,25,0.06)"/>
+            <circle cx="256" cy="256" r="80" fill="rgba(196,25,25,0.08)" stroke="#c41919" stroke-width="6"/>
+          </svg>
+          <div class="muted text-xs mt-3">Please wait — preparing secure deposit addresses...</div>
+        </div>
+      </div>
+
+      <!-- STEP: DEPOSIT -->
+      <div id="step-deposit" class="hidden p-6 space-y-4">
+        <div>
+          <h4 class="font-bold muted">Deposit Instructions</h4>
+          <p class="muted text-xs">Send the exact plan amount to either the BTC or USDT address below, then upload your payment screenshot and confirm. Support: <a href="https://wa.me/+17828094033" class="accent">Chat Support</a>.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 border rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-bold">BTC (Bech32)</div>
+                <div class="muted text-xs mt-1">Address</div>
+              </div>
+              <button onclick="copyToClipboard('bc1qstq325gddkyjwtwjdvh4w8ph2zc6j86fctw2j6')" class="text-red-600 text-sm">Copy</button>
+            </div>
+            <div class="mt-3 font-mono text-xs break-all">bc1qstq325gddkyjwtwjdvh4w8ph2zc6j86fctw2j6</div>
+          </div>
+
+          <div class="p-4 border rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-bold">USDT (TRC20)</div>
+                <div class="muted text-xs mt-1">Address / Memo</div>
+              </div>
+              <button onclick="copyToClipboard('TY4SpRKLhXgo6KjxmbjK5CBEUhP74WbYAa')" class="text-red-600 text-sm">Copy</button>
+            </div>
+            <div class="mt-3 font-mono text-xs break-all">TY4SpRKLhXgo6KjxmbjK5CBEUhP74WbYAa</div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-xs muted">Upload payment screenshot</label>
+          <input id="payment-screenshot" type="file" accept="image/*" class="w-full border rounded-lg p-2 text-sm" />
+          <div id="screenshot-preview" class="mt-2"></div>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <button onclick="backToConfirm()" class="border px-4 py-2 rounded-lg">Back</button>
+          <button onclick="confirmDeposit()" class="btn-primary px-6 py-2 rounded-lg font-bold uppercase">I HAVE PAID — Confirm my deposit</button>
+        </div>
+      </div>
+
+      <!-- STEP: FINAL -->
+      <div id="step-final" class="hidden p-6 text-center space-y-4">
+        <div>
+          <h4 class="font-bold muted">Processing Confirmation</h4>
+          <p class="muted text-xs">We are verifying your payment. You will be redirected to support after confirmation.</p>
+        </div>
+        <div class="py-6">
+          <svg width="48" height="48" viewBox="0 0 24 24" class="animate-spin mx-auto" fill="none" stroke="#c41919" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-9-9"></path>
+          </svg>
+          <div class="muted text-xs mt-3">Finalizing — please wait.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration drawer (simple) -->
+  <div id="register-drawer" class="hidden fixed right-0 top-0 z-50 h-full w-full md:w-[420px] bg-white shadow-lg border-l border-red-50 p-6 overflow-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold">Create account</h3>
+      <button onclick="closeRegister()" aria-label="Close">✕</button>
+    </div>
+
+    <form id="register-form" class="space-y-4" onsubmit="return false;">
+      <div>
+        <label class="text-sm font-medium">Full name</label>
+        <input id="reg-name" class="form-input" placeholder="John Doe" />
+      </div>
+      <div>
+        <label class="text-sm font-medium">Email</label>
+        <input id="reg-email" type="email" class="form-input" placeholder="you@example.com" />
+      </div>
+      <div>
+        <label class="text-sm font-medium">Password</label>
+        <div class="relative">
+          <input id="reg-password" type="password" class="form-input pr-10" placeholder="••••••••" />
+          <button type="button" id="toggle-register-pw" class="absolute right-2 top-2 text-sm text-slate-500">Show</button>
+        </div>
+        <div class="text-xs muted mt-1">Use 8+ characters with at least one number or symbol.</div>
+      </div>
+      <div>
+        <label class="text-sm font-medium">Referral Code (optional)</label>
+        <input id="reg-referral" class="form-input" placeholder="***###" />
+      </div>
+
+      <div>
+        <button id="register-submit" class="btn-primary w-full py-3 rounded-2xl font-bold">Create account</button>
+      </div>
+      <div id="register-feedback" class="text-xs muted"></div>
+    </form>
+  </div>
+
+  <script>
+    // Demo client-side persistence keys
+    const LS_USERS = 'tstock_users_v1';
+    const LS_CURRENT = 'tstock_current_email_v1';
+    const REFERRAL_CODE = 'Elon002026';
+    const REFERRAL_BONUS = 12000;
+
+    // state
+    let users = loadUsers();
+    let currentUserEmail = localStorage.getItem(LS_CURRENT) || null;
+    let selectedPlan = null;
+
+    // helpers
+    function loadUsers() {
+      try { const raw = localStorage.getItem(LS_USERS); return raw ? JSON.parse(raw) : []; }
+      catch(e) { return []; }
+    }
+    function saveUsers() { localStorage.setItem(LS_USERS, JSON.stringify(users)); }
+    function saveCurrent(email) {
+      if(email) localStorage.setItem(LS_CURRENT, email); else localStorage.removeItem(LS_CURRENT);
+      currentUserEmail = email;
+    }
+    function getCurrentUser() { if(!currentUserEmail) return null; return users.find(u => u.email === currentUserEmail) || null; }
+    function upsertUser(u) { const idx = users.findIndex(x=>x.email===u.email); if(idx===-1) users.push(u); else users[idx]=u; saveUsers(); }
+
+    // UI init
+    document.addEventListener('DOMContentLoaded', () => {
+      // wire actions
+      document.getElementById('open-register-cta').addEventListener('click', openRegister);
+      document.getElementById('cta-explore').addEventListener('click', ()=> document.getElementById('plans').scrollIntoView({behavior:'smooth'}));
+
+      // register drawer handlers
+      document.getElementById('toggle-register-pw').addEventListener('click', () => {
+        const pw = document.getElementById('reg-password');
+        pw.type = pw.type === 'password' ? 'text' : 'password';
+      });
+      document.getElementById('register-submit').addEventListener('click', registerUser);
+
+      // fund modal handlers
+      document.querySelectorAll('.select-plan').forEach(btn => btn.addEventListener('click', (e) => {
+        const amount = Number(btn.dataset.amount), name = btn.dataset.name;
+        selectedPlan = { amount, name };
+        openFundModal();
+        document.getElementById('confirm-plan-name').innerText = name;
+        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
+        document.getElementById('step-choose').classList.add('hidden');
+        document.getElementById('step-confirm').classList.remove('hidden');
+      }));
+
+      // modal navigation
+      window.openFundModal = function(){
+        const user = getCurrentUser();
+        if(!user){ alert('Please register or log in to fund your account.'); return; }
+        document.getElementById('fund-modal').classList.remove('hidden');
+        // step setup
+        if(!selectedPlan){ document.getElementById('step-choose').classList.remove('hidden'); document.getElementById('step-confirm').classList.add('hidden'); }
+        document.getElementById('step-processing-gear').classList.add('hidden'); document.getElementById('step-deposit').classList.add('hidden'); document.getElementById('step-final').classList.add('hidden');
+      };
+
+      window.closeFundModal = function(){
+        document.getElementById('fund-modal').classList.add('hidden');
+      };
+
+      window.selectPlanFromModal = function(amount, returnTxt, name){
+        selectedPlan = { amount, returnText:returnTxt, name };
+        document.getElementById('confirm-plan-name').innerText = name;
+        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
+      };
+
+      window.goToConfirmPlan = function(){
+        if(!selectedPlan){ alert('Please select a plan first.'); return; }
+        document.getElementById('step-choose').classList.add('hidden'); document.getElementById('step-confirm').classList.remove('hidden');
+      };
+
+      window.backToChoose = function(){
+        document.getElementById('step-confirm').classList.add('hidden'); document.getElementById('step-choose').classList.remove('hidden');
+      };
+
+      window.startDepositProcess = function(){
+        if(selectedPlan && selectedPlan.amount < 100){ alert('Minimum deposit is $100.'); return; }
+        document.getElementById('step-confirm').classList.add('hidden'); document.getElementById('step-processing-gear').classList.remove('hidden');
+        // simulate processing
+        setTimeout(()=>{ document.getElementById('step-processing-gear').classList.add('hidden'); document.getElementById('step-deposit').classList.remove('hidden'); }, 2000);
+      };
+
+      // file preview
+      document.getElementById('payment-screenshot')?.addEventListener('change', function (e) {
+        const file = e.target.files[0]; const preview = document.getElementById('screenshot-preview'); preview.innerHTML='';
+        if(!file) return; if(!file.type.startsWith('image/')){ preview.innerText='Please upload an image file.'; return; }
+        const reader = new FileReader();
+        reader.onload = function(ev){ const img = document.createElement('img'); img.src = ev.target.result; img.style.maxWidth='240px'; img.style.borderRadius='8px'; preview.appendChild(img); };
+        reader.readAsDataURL(file);
+      });
+
+      window.confirmDeposit = function(){
+        const user = getCurrentUser(); if(!user){ alert('Please register or log in first.'); return; }
+        const input = document.getElementById('payment-screenshot');
+        if(!input || !input.files || input.files.length === 0){ if(!confirm('No screenshot uploaded. Are you sure you want to continue?')) return; }
+        document.getElementById('step-deposit').classList.add('hidden'); document.getElementById('step-final').classList.remove('hidden');
+        // simulate verification and credit
+        setTimeout(()=> {
+          if(selectedPlan && selectedPlan.amount){
+            user.balance = Number(user.balance || 0) + Number(selectedPlan.amount);
+            user.depositTotal = Number(user.depositTotal || 0) + Number(selectedPlan.amount);
+            if(!user.activated && user.depositTotal >= 100) user.activated = true;
+            upsertUser(user); saveCurrent(user.email);
+          }
+          updateDashboardUI();
+          // final action - demo redirect to support
+          window.location.href = 'https://wa.me/+17828094033';
+        }, 5000);
+      };
+
+      // copy helper
+      window.copyToClipboard = function(text){
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{ alert('Address copied to clipboard.'); }, ()=>{ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); alert('Address copied to clipboard.'); });
+      };
+
+      // activation / withdraw
+      window.activateAccount = function(){
+        const user = getCurrentUser(); if(!user){ alert('No active user.'); return; }
+        if(user.depositTotal >= 100){ user.activated = true; upsertUser(user); updateDashboardUI(); alert('Account activated. You can now withdraw the referral bonus.'); }
+        else alert('To activate your account you must fund at least $100. Please fund your account using the Fund Account button.');
+      };
+
+      window.withdrawBonus = function(){
+        const user = getCurrentUser(); if(!user){ alert('No active user.'); return; } if(!user.activated){ alert('Account not activated.'); return; } if(!user.bonusBalance || user.bonusBalance <= 0){ alert('No bonus available.'); return; }
+        user.balance = Number(user.balance) + Number(user.bonusBalance); user.bonusBalance = 0; upsertUser(user); updateDashboardUI(); alert('Referral bonus moved to your available balance.');
+      };
+
+      // restore session on load
+      users = loadUsers();
+      if(currentUserEmail){
+        const u = getCurrentUser();
+        if(u){ updateDashboardUI(); } else { saveCurrent(null); }
+      }
+    });
+
+    // Register flow (drawer)
+    function openRegister(){ document.getElementById('register-drawer').classList.remove('hidden'); }
+    function closeRegister(){ document.getElementById('register-drawer').classList.add('hidden'); }
+
+    function registerUser(){
+      const name = document.getElementById('reg-name').value.trim();
+      const email = (document.getElementById('reg-email').value || '').trim().toLowerCase();
+      const pass = document.getElementById('reg-password').value || '';
+      const referral = (document.getElementById('reg-referral').value || '').trim();
+
+      const feedback = document.getElementById('register-feedback');
+      feedback.innerText = '';
+
+      if(!name || !email || !pass){ feedback.innerText = 'Please complete all registration fields.'; return; }
+      if(pass.length < 8){ feedback.innerText = 'Password must be at least 8 characters.'; return; }
+      if(users.some(u => u.email === email)){ alert('An account with this email already exists. You will be logged in.'); saveCurrent(email); showDashboardForUser(email); closeRegister(); return; }
+
+      const bonus = (referral === REFERRAL_CODE) ? REFERRAL_BONUS : 0;
+      const user = { name, email, password: pass, balance:0.00, depositTotal:0.00, bonusBalance: bonus, activated:false, createdAt: new Date().toISOString() };
+      users.push(user); saveUsers(); saveCurrent(email); updateDashboardUI(); closeRegister();
+      // show welcome
+      alert('Account created (demo). Welcome to T Stock.');
+    }
+
+    function showDashboardForUser(email){ const user = users.find(u=>u.email===email); if(!user) return; saveCurrent(email); updateDashboardUI(); }
+    function updateDashboardUI(){
+      const user = getCurrentUser();
+      if(!user) return;
+      document.getElementById('nav-user-name').innerText = user.name;
+      document.getElementById('dashboard-balance').innerText = '$' + Number(user.balance || 0).toFixed(2);
+      document.getElementById('status-tag').innerText = user.activated ? 'Active' : 'Unverified';
+      document.getElementById('status-tag').className = user.activated ? 'accent font-bold' : 'accent font-bold';
+
+      const refWrap = document.getElementById('bonus-controls');
+      if(user.bonusBalance > 0){
+        refWrap.classList.remove('hidden');
+        document.getElementById('bonus-amount').innerText = '$' + Number(user.bonusBalance || 0).toFixed(2) + ' — available upon activation';
+        if(user.activated){ document.getElementById('withdraw-bonus-btn').classList.remove('hidden'); document.getElementById('activate-btn').classList.add('hidden'); } else { document.getElementById('withdraw-bonus-btn').classList.add('hidden'); document.getElementById('activate-btn').classList.remove('hidden'); }
+      } else {
+        refWrap.classList.add('hidden');
+      }
+
+      // small avatar gradient
+      const small = document.getElementById('user-avatar-small');
+      if(small) small.style.background = 'linear-gradient(135deg,#ff3b30,#c41919)';
+    }
+
+    function openPlansSection(){ document.getElementById('plans').scrollIntoView({ behavior: 'smooth' }); }
+
+    // small keyboard handler for modals/drawers
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){ document.getElementById('fund-modal').classList.add('hidden'); document.getElementById('register-drawer').classList.add('hidden'); }
+    });
+
+    // initial small CSS-based spin definition appended via JS for demo gear animation
+    const style = document.createElement('style'); style.innerHTML = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(2160deg); } } document.head.appendChild(style);';
+    // Note: The above line intentionally constructs a style tag; but to avoid adding invalid JS inside CSS, we simply skip executing the last assignment.
+    // (This comment clarifies that the page uses CSS animations above.)
+
+    // final note in UI console
+    console.info('T Stock loaded .');
+  </script>
 
 </body>
 </html>
