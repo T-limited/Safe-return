@@ -2,1368 +2,907 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tesla Model Delivery Tracker - Iceland</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesla Stock Trading & Careers</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" type="image/png" />
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" />
+  <meta name="theme-color" content="#cc0000" />
+  <!-- Leaflet CSS (OpenStreetMap) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    * {
+    :root {
+      --tesla-red: #cc0000;
+      --tesla-dark: #222;
+      --tesla-light: #fafafa;
+      --tesla-shadow: 0 2px 14px #e0e0e0;
+      --tesla-green: #008800;
+    }
+    body {
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--tesla-light);
+      color: var(--tesla-dark);
     }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow-x: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #0a0a0a;
-      color: #ffffff;
-      line-height: 1.6;
+    .tesla-logo {
+      display: block;
+      margin: 32px auto 0 auto;
+      width: 110px;
+      filter: drop-shadow(0px 0px 6px #fff3f3);
     }
-
-    .navbar {
-      background-color: #1a1a1a;
-      padding: 15px 30px;
-      box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 3px solid #dc143c;
-    }
-
-    .navbar-content {
-      max-width: 1400px;
+    .main-container {
+      max-width: 1150px;
       margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--tesla-shadow);
+      padding-bottom: 30px;
+    }
+    header {
+      background: var(--tesla-red);
+      color: white;
+      padding: 22px 30px 18px 30px;
+      border-radius: 12px 12px 0 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .logo {
-      font-size: 1.8em;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-status {
-      background-color: rgba(220, 20, 60, 0.2);
-      padding: 8px 15px;
-      border-radius: 25px;
-      border: 2px solid #dc143c;
-      font-size: 0.85em;
+      font-size: 1.18em;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #ff6b6b;
+      box-shadow: 0 2px 5px #e3e3e3;
     }
-
-    .support-btn {
-      background-color: #dc143c;
+    .dashboard {
+      padding: 40px 32px 10px 32px;
+      background: var(--tesla-light);
+      border-radius: 0 0 12px 12px;
+    }
+    .banner {
+      background: linear-gradient(90deg,#fff8f8,#f8f8ff);
+      border: 2px solid var(--tesla-red);
+      border-radius: 10px;
+      text-align: center;
+      padding: 30px 18px 22px 18px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 14px #f8eaea;
+    }
+    .banner h1 {
+      margin: 0 0 18px 0;
+      font-size: 2em;
+      color: var(--tesla-red);
+      font-weight: 800;
+      text-shadow: 0 1px 0 #fff2f2;
+    }
+    .banner button {
+      padding: 13px 38px;
+      background: var(--tesla-red);
       color: white;
-      padding: 10px 20px;
       border: none;
       border-radius: 6px;
+      font-size: 1.15em;
+      font-weight: bold;
       cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
+      box-shadow: 0 1px 4px #ddd;
+      margin-top: 15px;
+      transition: background 0.2s;
     }
-
-    .support-btn:hover {
-      background-color: #b30a30;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
+    .banner button:hover {
+      background: #a80000;
     }
-
-    .main-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0;
-      min-height: calc(100vh - 70px);
-    }
-
-    .page {
-      display: none;
-      min-height: calc(100vh - 70px);
-      padding: 40px 30px;
-      animation: fadeIn 0.5s ease-in-out;
-      background-color: #0a0a0a;
-    }
-
-    .page.active {
+    .gallery {
       display: flex;
-      flex-direction: column;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    #page-splash {
+      gap: 22px;
       justify-content: center;
-      align-items: center;
-      text-align: center;
-      background-color: #0a0a0a;
+      margin-bottom: 38px;
+      flex-wrap: wrap;
     }
-
-    .splash-content {
-      animation: slideUp 0.8s ease-out;
-    }
-
-    .splash-logo {
-      font-size: 5em;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    .splash-title {
-      font-size: 3em;
-      font-weight: 900;
-      margin-bottom: 15px;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-    }
-
-    .splash-subtitle {
-      font-size: 1.3em;
-      color: #999999;
-      margin-bottom: 40px;
-      font-weight: 300;
-    }
-
-    .splash-btn {
-      background-color: #dc143c;
-      color: white;
-      padding: 16px 50px;
-      border: none;
+    .gallery img {
+      width: 270px;
+      height: 160px;
+      object-fit: cover;
       border-radius: 8px;
-      font-size: 1.1em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+      border: 1px solid #ddd;
+      box-shadow: 0 0px 8px #f0f0f0;
+      background: #fff;
     }
-
-    .splash-btn:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(220, 20, 60, 0.5);
-    }
-
-    #page-registration {
-      justify-content: center;
-      align-items: center;
-      background-color: #0a0a0a;
-    }
-
-    .registration-container {
-      width: 100%;
-      max-width: 500px;
-      background-color: #1a1a1a;
-      border: 2px solid #dc143c;
-      border-radius: 15px;
-      padding: 50px 40px;
-      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
-    }
-
-    .reg-header {
+    .jobs-title {
+      font-size: 1.4em;
+      color: var(--tesla-red);
+      font-weight: bold;
+      margin-bottom: 16px;
       text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .reg-header h1 {
-      font-size: 2em;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
-
-    .reg-header p {
-      color: #999999;
-      font-size: 0.95em;
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 0.95em;
-      text-transform: uppercase;
       letter-spacing: 1px;
     }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #333333;
-      border-radius: 8px;
-      background-color: #0f0f0f;
-      color: #ffffff;
-      font-size: 1em;
-      font-family: inherit;
-      transition: all 0.3s ease;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="tel"]:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #dc143c;
-      box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
-      background-color: #1a1a1a;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: #666666;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .error-text {
-      color: #ff6b6b;
-      font-size: 0.8em;
-      margin-top: 5px;
-      display: none;
-      text-transform: capitalize;
-    }
-
-    input.error,
-    textarea.error {
-      border-color: #ff6b6b;
-      background-color: rgba(255, 107, 107, 0.05);
-    }
-
-    .form-actions {
+    .jobs {
       display: flex;
-      gap: 15px;
-      margin-top: 35px;
-    }
-
-    .btn-primary {
-      flex: 1;
-      background-color: #dc143c;
-      color: white;
-      padding: 14px 30px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .btn-primary:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    .btn-secondary {
-      flex: 1;
-      background-color: transparent;
-      color: #dc143c;
-      padding: 14px 30px;
-      border: 2px solid #dc143c;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .btn-secondary:hover {
-      background-color: rgba(220, 20, 60, 0.1);
-      transform: translateY(-2px);
-    }
-
-    #page-tracking-select {
+      gap: 26px;
+      flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      background-color: #0a0a0a;
+      margin-bottom: 34px;
     }
-
-    .tracking-select-container {
-      width: 100%;
-      max-width: 600px;
-      background-color: #1a1a1a;
-      border: 2px solid #dc143c;
-      border-radius: 15px;
-      padding: 50px 40px;
-      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
-      text-align: center;
-    }
-
-    .tracking-select-container h1 {
-      font-size: 2em;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 15px;
-    }
-
-    .tracking-select-container p {
-      color: #999999;
-      margin-bottom: 35px;
-      font-size: 0.95em;
-    }
-
-    .tracking-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #333333;
-      border-radius: 8px;
-      background-color: #0f0f0f;
-      color: #dc143c;
-      font-size: 1.05em;
-      text-align: center;
-      font-weight: 600;
-      letter-spacing: 2px;
-      margin-bottom: 25px;
-      transition: all 0.3s ease;
-    }
-
-    .tracking-input:focus {
-      outline: none;
-      border-color: #dc143c;
-      box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
-    }
-
-    .tracking-buttons {
-      display: flex;
-      gap: 15px;
-    }
-
-    #page-map {
-      background-color: #0a0a0a;
-      padding: 30px;
-      flex-direction: column;
-    }
-
-    .map-header {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .map-header h2 {
-      font-size: 2em;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
-
-    .map-header p {
-      color: #999999;
-    }
-
-    .map-container {
-      width: 100%;
-      height: calc(100vh - 350px);
-      border: 3px solid #dc143c;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.3);
-      margin-bottom: 30px;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    .tracking-status {
-      background-color: #1a1a1a;
-      border: 2px solid #dc143c;
-      border-radius: 12px;
-      padding: 25px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 25px;
-    }
-
-    .status-item {
-      background-color: rgba(220, 20, 60, 0.1);
-      padding: 20px;
+    .job-card {
+      border: 1.5px solid var(--tesla-red);
+      padding: 22px 22px 14px 22px;
       border-radius: 10px;
-      border-left: 4px solid #dc143c;
-      text-align: center;
-    }
-
-    .status-label {
-      color: #999999;
-      font-size: 0.85em;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    .status-value {
-      color: #dc143c;
-      font-size: 1.2em;
-      font-weight: 700;
-      word-break: break-word;
-    }
-
-    .tracking-actions {
-      display: flex;
-      gap: 15px;
-      margin-top: 25px;
-    }
-
-    .tracking-actions button {
+      background: white;
+      box-shadow: var(--tesla-shadow);
+      min-width: 250px;
+      max-width: 300px;
       flex: 1;
-      padding: 14px 25px;
-      border-radius: 8px;
+      text-align: left;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .job-card strong {
+      font-size: 1.18em;
+      color: var(--tesla-red);
+      display: block;
+      margin-bottom: 9px;
+    }
+    .job-card .job-details {
       font-size: 1em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border: none;
+      margin: 10px 0 16px 0;
+      color: #555;
+      line-height: 1.4;
     }
-
-    .btn-continue {
-      background-color: #dc143c;
+    .job-card button {
+      background: var(--tesla-red);
       color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.07em;
+      transition: background 0.2s;
+      box-shadow: 0 1px 6px #f0eaea;
+      margin-top: auto;
+      align-self: flex-end;
     }
-
-    .btn-continue:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+    .job-card button:hover {
+      background: #a80000;
     }
-
-    #page-payment {
-      background-color: #0a0a0a;
-      padding: 40px 30px;
+    .job-card .job-legit {
+      font-size: 0.97em;
+      color: var(--tesla-green);
+      margin-bottom: 12px;
+      font-style: italic;
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      background: #eafbea;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
-
-    .payment-content {
+    .tesla-info {
+      margin: 0 auto 30px auto;
+      padding: 22px 32px;
+      background: #fff8f8;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      color: #333;
+      font-size: 1.09em;
+      box-shadow: 0 0px 8px #f7eaea;
       max-width: 900px;
-      margin: 0 auto;
     }
-
-    .payment-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .payment-header h1 {
-      font-size: 2.5em;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+    .tesla-info h3 {
+      color: var(--tesla-red);
+      font-weight: bold;
+      margin-top: 0;
       margin-bottom: 10px;
+      letter-spacing: 1px;
     }
-
-    .payment-header p {
-      color: #999999;
+    .footer {
+      text-align: center;
+      padding: 28px 0;
+      font-size: 1.05em;
+      color: #666;
+      margin-top: 30px;
+      background: linear-gradient(90deg,#fff8f8,#f4f4f4);
+      border-top: 2px solid var(--tesla-red);
+      border-radius: 0 0 12px 12px;
+    }
+    .footer a {
+      color: var(--tesla-red);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    /* Auth Pages */
+    .auth-page {
+      max-width: 480px;
+      margin: 40px auto 30px auto;
+      padding: 36px 30px 23px 30px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: var(--tesla-shadow);
+      position: relative;
+    }
+    .auth-choice {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+    .auth-choice button {
+      width: 49%;
+      padding: 14px;
+      background: var(--tesla-red);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.07em;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .auth-choice button:hover {
+      background: #a80000;
+    }
+    .auth-section {
+      display: none;
+    }
+    .auth-section.active {
+      display: block;
+    }
+    .auth-section h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--tesla-red);
+      font-weight: 700;
+      font-size: 1.25em;
+      letter-spacing: 1px;
+    }
+    .auth-section input {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0 0 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1.07em;
+      font-family: inherit;
+      background: #f6f6f6;
+      transition: border .18s;
+    }
+    .auth-section input:focus {
+      border-color: var(--tesla-red);
+      outline: none;
+    }
+    .auth-section label {
+      display: block;
+      margin-top: 13px;
+      font-weight: bold;
+      color: var(--tesla-red);
+      font-size: 1em;
+      letter-spacing: 0.5px;
+    }
+    .auth-section button {
+      width: 100%;
+      padding: 13px;
+      background: var(--tesla-red);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.15em;
+      cursor: pointer;
+      margin-top: 19px;
+      font-weight: 700;
+      transition: background 0.2s;
+      box-shadow: 0 1px 4px #eee;
+    }
+    .auth-section button:hover {
+      background: #a80000;
+    }
+    .error-msg {
+      color: var(--tesla-red);
+      background: #ffeef0;
+      border-radius: 5px;
+      padding: 9px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1em;
+      font-weight: 600;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .special-login-info {
+      background: #fff3f3;
+      color: var(--tesla-red);
+      font-weight: bold;
+      border-radius: 7px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 14px;
+      display: none;
       font-size: 1.05em;
     }
-
-    .payment-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 40px;
+    .special-login-hash {
+      color: #333;
+      margin-top: 7px;
+      font-size: 0.98em;
+      font-weight: normal;
     }
-
-    .payment-card {
-      background-color: #1a1a1a;
-      border: 2px solid #dc143c;
-      border-radius: 15px;
-      padding: 35px 30px;
-      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
-    }
-
-    .payment-card h2 {
-      color: #dc143c;
-      font-size: 1.5em;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .payment-info {
-      color: #cccccc;
-      line-height: 1.8;
-      margin-bottom: 20px;
-    }
-
-    .payment-info p {
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .payment-info-label {
-      color: #999999;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.85em;
-    }
-
-    .payment-info-value {
-      color: #ffffff;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .wallet-address {
-      background-color: #0f0f0f;
-      border: 2px solid #333333;
-      padding: 16px 14px;
-      border-radius: 8px;
-      word-break: break-all;
-      font-family: 'Courier New', monospace;
-      font-weight: 600;
-      color: #dc143c;
-      font-size: 0.9em;
-      margin: 20px 0;
-      line-height: 1.6;
-    }
-
-    .copy-btn {
-      width: 100%;
-      background-color: rgba(220, 20, 60, 0.2);
-      border: 2px solid #dc143c;
-      color: #dc143c;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      font-size: 0.85em;
-      letter-spacing: 1px;
-    }
-
-    .copy-btn:hover {
-      background-color: rgba(220, 20, 60, 0.3);
-      color: #ff6b6b;
-    }
-
-    .recipient-card {
-      background-color: rgba(220, 20, 60, 0.1);
-      border: 2px solid #dc143c;
-      border-radius: 12px;
-      padding: 25px;
-      margin-top: 20px;
-    }
-
-    .recipient-card h3 {
-      color: #dc143c;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      font-size: 0.95em;
-      letter-spacing: 1px;
-    }
-
-    .recipient-info {
-      color: #cccccc;
-      line-height: 1.8;
-    }
-
-    .recipient-info p {
-      margin-bottom: 10px;
-    }
-
-    .recipient-label {
-      color: #999999;
-      font-size: 0.85em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .warning-box {
-      background-color: rgba(255, 107, 107, 0.1);
-      border-left: 4px solid #ff6b6b;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 30px 0;
-      color: #cccccc;
-      line-height: 1.8;
-    }
-
-    .warning-box strong {
-      color: #ff6b6b;
-      text-transform: uppercase;
-      font-size: 0.9em;
-      letter-spacing: 1px;
-    }
-
-    .payment-actions {
-      display: flex;
-      gap: 15px;
-      margin-top: 40px;
-    }
-
-    .btn-file-upload {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-file-upload input[type="file"] {
-      position: absolute;
-      left: -9999px;
-    }
-
-    .btn-file-upload label {
-      display: block;
-      background-color: #dc143c;
-      color: white;
-      padding: 14px 25px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.3s ease;
-      text-align: center;
-      font-size: 1em;
-      margin: 0;
-    }
-
-    .btn-file-upload input[type="file"]:checked + label,
-    .btn-file-upload label:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
-    }
-
-    .file-name {
-      color: #999999;
-      font-size: 0.85em;
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    #page-confirmation {
+    /* Spin Modal */
+    .spin-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
       justify-content: center;
       align-items: center;
-      background-color: #0a0a0a;
-      padding: 40px 30px;
+      z-index: 20;
     }
-
-    .confirmation-container {
-      width: 100%;
-      max-width: 700px;
+    .spin-content {
+      background: #fff;
+      padding: 34px 28px;
+      border-radius: 14px;
       text-align: center;
+      box-shadow: 0 0 22px var(--tesla-red);
+      max-width: 350px;
+      width: 95%;
+      animation: popin 0.5s;
+      position: relative;
     }
-
-    .success-badge {
-      font-size: 4em;
-      margin-bottom: 20px;
-      animation: pulse 2s ease-in-out infinite;
+    @keyframes popin {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
-
-    .confirmation-title {
-      font-size: 2.5em;
-      color: #dc143c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 15px;
-      font-weight: 900;
+    .spin-wheel {
+      margin: 18px auto;
+      width: 210px; height: 210px;
+      border-radius: 50%;
+      border: 6px solid var(--tesla-red);
+      background: repeating-conic-gradient(
+        #ffe0e0 0deg 72deg, #fff 72deg 144deg, #ffe0e0 144deg 216deg, #fff 216deg 288deg, #ffe0e0 288deg 360deg
+      );
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.15em;
+      color: var(--tesla-red);
+      position: relative;
     }
-
-    .confirmation-subtitle {
-      color: #999999;
+    .spin-arrow {
+      position: absolute;
+      top: -26px; left: 50%; transform: translateX(-50%);
+      font-size: 2em;
+      color: var(--tesla-red);
+    }
+    .spin-prize {
+      margin-top: 15px;
       font-size: 1.1em;
-      margin-bottom: 35px;
-      line-height: 1.6;
+      font-weight: bold;
+      color: #333;
     }
-
-    .confirmation-details {
-      background-color: #1a1a1a;
-      border: 2px solid #dc143c;
-      border-radius: 12px;
-      padding: 30px;
-      margin-bottom: 30px;
-      text-align: left;
+    /* Delivery Modal */
+    .delivery-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
     }
-
-    .detail-row {
+    .delivery-content {
+      background: #fff;
+      padding: 30px 25px 25px 25px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 0 22px var(--tesla-red);
+      max-width: 440px;
+      width: 95%;
+      animation: popin 0.5s;
+      position: relative;
+    }
+    .delivery-title {
+      font-size: 1.22em;
+      font-weight: bold;
+      color: var(--tesla-red);
+      margin-bottom: 12px;
       display: flex;
-      justify-content: space-between;
-      padding: 15px 0;
-      border-bottom: 1px solid #333333;
-      color: #cccccc;
-    }
-
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-
-    .detail-label {
-      color: #999999;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.85em;
-    }
-
-    .detail-value {
-      color: #dc143c;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .confirmation-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      border: 2px solid #dc143c;
-      margin-bottom: 30px;
-      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
-    }
-
-    .confirmation-actions {
-      display: flex;
-      gap: 15px;
-    }
-
-    .btn-finish {
-      flex: 1;
-      background-color: #dc143c;
-      color: white;
-      padding: 14px 25px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       letter-spacing: 1px;
     }
-
-    .btn-finish:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+    .delivery-process-info {
+      margin: 14px 0 12px 0;
+      color: #333;
+      font-size: 1.08em;
+      font-weight: 500;
     }
-
-    .support-contact {
-      margin-top: 40px;
-      padding-top: 30px;
-      border-top: 2px solid #333333;
-      color: #999999;
-    }
-
-    .support-contact p {
-      margin-bottom: 15px;
-    }
-
-    .support-contact a {
-      display: inline-block;
-      background-color: #dc143c;
-      color: white;
-      padding: 12px 25px;
-      border-radius: 8px;
-      text-decoration: none;
+    .delivery-process-wait {
+      font-size: 1.05em;
+      color: var(--tesla-red);
       font-weight: 600;
+      animation: blinker 1s linear infinite;
+      margin-top: 5px;
+    }
+    @keyframes blinker { 50% { opacity: 0.45; } }
+    .delivery-process-done {
+      font-size: 1.13em;
+      color: #006600;
+      font-weight: 700;
       margin-top: 10px;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      font-size: 0.85em;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
     }
-
-    .support-contact a:hover {
-      background-color: #ff6b6b;
-      transform: translateY(-2px);
-    }
-
-    .progress-bar {
+    .delivery-map {
+      border: 2px solid var(--tesla-red);
+      border-radius: 8px;
+      margin: 0 auto 10px auto;
       width: 100%;
-      height: 4px;
-      background-color: #333333;
-      margin-bottom: 30px;
-      border-radius: 2px;
+      height: 210px;
       overflow: hidden;
+      box-shadow: 0 1px 6px #eee;
+      background: #eaf3ff;
+      position: relative;
     }
-
-    .progress-fill {
-      height: 100%;
-      background-color: #dc143c;
-      transition: width 0.5s ease;
-      width: 0%;
+    .delivery-map .map-header {
+      position: absolute;
+      top: 8px; left: 16px;
+      background: #fff;
+      color: var(--tesla-red);
+      padding: 3px 13px;
+      border-radius: 7px;
+      font-weight: bold;
+      font-size: 1em;
+      box-shadow: 0 1px 6px #eee;
+      z-index: 1;
+      letter-spacing: 0.5px;
     }
-
-    .leaflet-popup-content-wrapper {
-      background-color: #1a1a1a !important;
-      border: 2px solid #dc143c !important;
-      color: #ffffff !important;
+    .delivery-track-info {
+      color: var(--tesla-red);
+      font-size: 1.04em;
+      margin-top: 7px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
     }
-
-    .leaflet-popup-tip {
-      background-color: #1a1a1a !important;
+    .delivery-bell-btn {
+      background: none;
+      border: none;
+      font-size: 1.45em;
+      color: var(--tesla-red);
+      cursor: pointer;
+      margin-bottom: 10px;
+      animation: bell-pulse 1.2s infinite;
     }
-
-    .leaflet-container {
-      background-color: #1a1a1a !important;
+    @keyframes bell-pulse { 0% { transform: scale(1);} 50% { transform: scale(1.18);} 100% { transform: scale(1);} }
+    .delivery-bell-btn:active { color: #006600; }
+    .delivery-bell-beep {
+      font-size: 1.13em;
+      color: var(--tesla-red);
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: none;
+      letter-spacing: 0.5px;
     }
-
-    .leaflet-control-zoom {
-      border: 2px solid #dc143c !important;
-    }
-
-    .leaflet-control-zoom a {
-      background-color: #1a1a1a !important;
-      color: #dc143c !important;
-      border-bottom: 2px solid #dc143c !important;
-    }
-
-    .leaflet-control-zoom a:hover {
-      background-color: rgba(220, 20, 60, 0.2) !important;
-    }
-
-    .leaflet-control-attribution {
-      background-color: rgba(26, 26, 26, 0.8) !important;
-      color: #999999 !important;
-    }
-
-    @media (max-width: 768px) {
-      .navbar-content {
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      .logo {
-        font-size: 1.3em;
-      }
-
-      .splash-title {
-        font-size: 2em;
-      }
-
-      .registration-container,
-      .tracking-select-container {
-        margin: 20px;
-      }
-
-      .payment-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .map-container {
-        height: 400px;
-        margin-bottom: 20px;
-      }
-
-      #page-map {
-        height: auto;
-      }
-
-      .payment-actions {
-        flex-direction: column;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .detail-row {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .detail-value {
-        text-align: left;
-      }
-
-      .confirmation-actions {
-        flex-direction: column;
-      }
-
-      .tracking-actions {
-        flex-direction: column;
-      }
-    }
+    #osmMap { width: 100%; height: 210px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <div class="navbar-content">
-      <div class="logo">⚡ TESLA TRACKER</div>
-      <div class="nav-links">
-        <span class="nav-status" id="navStatus">Status: Initialization</span>
-        <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank" class="support-btn">Support</a>
-      </div>
-    </div>
-  </div>
-
+  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" alt="Tesla Logo" class="tesla-logo" />
   <div class="main-container">
-    <!-- PAGE 1: SPLASH SCREEN -->
-    <div class="page active" id="page-splash">
-      <div class="splash-content">
-        <div class="splash-logo">⚡</div>
-        <h1 class="splash-title">Tesla Delivery Tracker</h1>
-        <p class="splash-subtitle">Professional Fleet Tracking for Iceland</p>
-        <button class="splash-btn" onclick="goToPage('registration')">Start Tracking</button>
+    <div id="authPage" class="auth-page">
+      <div class="auth-choice">
+        <button onclick="showAuth('register')">Register Account</button>
+        <button onclick="showAuth('login')">Already Registered? Login</button>
       </div>
-    </div>
-
-    <!-- PAGE 2: REGISTRATION -->
-    <div class="page" id="page-registration">
-      <div class="registration-container">
-        <div class="reg-header">
-          <h1>📋 Registration</h1>
-          <p>Complete your profile to begin tracking</p>
+      <div id="regSection" class="auth-section active">
+        <h2>Register for Tesla Private Trading</h2>
+        <div id="regError" class="error-msg"></div>
+        <form onsubmit="event.preventDefault(); register();">
+          <label for="regFullName">Full Name</label>
+          <input type="text" id="regFullName" placeholder="Full Name" required />
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" placeholder="Username" required />
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" placeholder="Email" required />
+          <label for="regPhone">Phone</label>
+          <input type="tel" id="regPhone" placeholder="Phone Number" required />
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" placeholder="Password" required />
+          <label for="regReferral">Tesla Private Referral ID</label>
+          <input type="text" id="regReferral" placeholder="Referral ID" required />
+          <label for="regLocation">Residential Location (City, State/Country)</label>
+          <input type="text" id="regLocation" placeholder="e.g. Berlin, Germany" required />
+          <button type="submit">Register</button>
+        </form>
+      </div>
+      <div id="loginSection" class="auth-section">
+        <h2>Login to Your Tesla Account</h2>
+        <div id="loginError" class="error-msg"></div>
+        <div id="specialLoginInfo" class="special-login-info">
+          For exclusive Tesla MODEL S delivery tracking, login with<br>
+          <span class="special-login-hash">Phone: <b>+‪3548504428‬</b> &mdash; Referral ID: <b>962081</b> &mdash; Hash-ID: <b>[ 0196-6324-8349 ]</b></span>
         </div>
-        <form id="registrationForm" onsubmit="submitRegistration(event)">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fullName">Full Name</label>
-              <input type="text" id="fullName" placeholder="John Doe" required />
-              <span class="error-text">At least 3 characters required</span>
-            </div>
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" placeholder="john@example.com" required />
-              <span class="error-text">Valid email required</span>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="phone">Contact Number</label>
-              <input type="tel" id="phone" placeholder="+354 XXX XXXX" required />
-              <span class="error-text">Valid phone number required</span>
-            </div>
-            <div class="form-group">
-              <label for="trackingNumber">Tracking Number</label>
-              <input type="text" id="trackingNumber" placeholder="TM2022ICELAND" required />
-              <span class="error-text">Tracking number required</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="address">Iceland Delivery Address</label>
-            <textarea id="address" placeholder="Street address, postal code, city, Iceland" required></textarea>
-            <span class="error-text">Valid address required (minimum 10 characters)</span>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="goToPage('splash')">Back</button>
-            <button type="submit" class="btn-primary">Continue</button>
-          </div>
+        <form onsubmit="event.preventDefault(); login();">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" placeholder="Username" required />
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Password" required />
+          <button type="submit">Login</button>
         </form>
       </div>
     </div>
 
-    <!-- PAGE 3: TRACKING SELECTION -->
-    <div class="page" id="page-tracking-select">
-      <div class="tracking-select-container">
-        <h1>🚗 Start Tracking</h1>
-        <p>Your tracking information has been verified</p>
-        <p style="color: #dc143c; font-weight: 700;">Ready to track your Tesla delivery?</p>
-        <input type="text" class="tracking-input" id="trackingDisplay" disabled />
-        <div class="tracking-buttons">
-          <button class="btn-secondary" onclick="goToPage('registration')">Back</button>
-          <button class="btn-primary" onclick="goToPage('map')">Start Live Tracking</button>
+    <div id="dashboard" style="display:none;">
+      <header>
+        <div>👤 <span id="userDisplay"></span></div>
+        <div>💰 Balance: €300,000</div>
+        <div>📦 Orders: 5</div>
+        <div>🧑‍💼 Jobs: 6</div>
+        <div>⭐ Level: Pro</div>
+      </header>
+      <div class="dashboard">
+        <div class="banner">
+          <h1>Join Tesla Stock Trading to Earn $8,000 Weekly</h1>
+          <button onclick="window.open('https://web3autotrades.cc', '_blank')">Join Now</button>
         </div>
-      </div>
-    </div>
-
-    <!-- PAGE 4: LIVE TRACKING MAP -->
-    <div class="page" id="page-map">
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: 50%;"></div>
-      </div>
-      <div class="map-header">
-        <h2>🌍 Live Delivery Route</h2>
-        <p>Real-time tracking from Tesla HQ, California to Iceland</p>
-      </div>
-      <div class="map-container">
-        <div id="map"></div>
-      </div>
-      <div class="tracking-status">
-        <div class="status-item">
-          <div class="status-label">📍 Current Location</div>
-          <div class="status-value" id="statusLocation">Tesla Factory, CA</div>
+        <div class="gallery">
+          <img src="Screenshot_20250818_023650_WhatsApp.jpg" alt="Model X" />
+          <img src="Screenshot_20250818_023638_WhatsApp.jpg" alt="Model 3" />
+          <img src="Screenshot_20250818_023626_WhatsApp.jpg" alt="Model Y" />
         </div>
-        <div class="status-item">
-          <div class="status-label">⏱️ Estimated Time</div>
-          <div class="status-value" id="statusTime">72-96 Hours</div>
-        </div>
-        <div class="status-item">
-          <div class="status-label">🚗 Vehicle Status</div>
-          <div class="status-value" id="statusVehicle">In Transit</div>
-        </div>
-        <div class="status-item">
-          <div class="status-label">📦 Package Status</div>
-          <div class="status-value" id="statusPackage">Secured</div>
-        </div>
-      </div>
-      <div class="tracking-actions">
-        <button class="btn-secondary" onclick="goToPage('tracking-select')">Back</button>
-        <button class="btn-continue" onclick="simulateTracking()">Simulate Progress</button>
-        <button class="btn-primary" onclick="goToPage('payment')">Proceed to Payment</button>
-      </div>
-    </div>
-
-    <!-- PAGE 5: PAYMENT -->
-    <div class="page" id="page-payment">
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: 75%;"></div>
-      </div>
-      <div class="payment-content">
-        <div class="payment-header">
-          <h1>💳 Payment & Clearance</h1>
-          <p>Complete the clearance payment to finalize delivery</p>
-        </div>
-        <div class="payment-grid">
-          <div class="payment-card">
-            <h2>💰 Payment Details</h2>
-            <div class="payment-info">
-              <p>
-                <span class="payment-info-label">Clearance Fee</span>
-                <span class="payment-info-value">$850 USD</span>
-              </p>
-              <p>
-                <span class="payment-info-label">Method</span>
-                <span class="payment-info-value">Bitcoin</span>
-              </p>
-              <p>
-                <span class="payment-info-label">Currency</span>
-                <span class="payment-info-value">BTC</span>
-              </p>
+        <div class="jobs-title">Tesla Careers</div>
+        <div class="jobs">
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Software Engineer</strong>
+            <div class="job-details">Salary: $120,000/year<br>
+              Location: Tesla HQ (Remote/Onsite)<br>
+              Type: Full-Time
             </div>
-            <div style="background-color: #0f0f0f; padding: 15px; border-radius: 8px; text-align: left;">
-              <p style="color: #999999; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Bitcoin Wallet Address</p>
-              <div class="wallet-address">
-                bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc
-              </div>
-              <button class="copy-btn" onclick="copyToClipboard('bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc')">
-                📋 Copy Address
-              </button>
+            <button onclick="applyJob('Software Engineer')">Apply</button>
+          </div>
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Battery Technician</strong>
+            <div class="job-details">Salary: $80,000/year<br>
+              Location: Gigafactory Berlin<br>
+              Type: Full-Time
             </div>
+            <button onclick="applyJob('Battery Technician')">Apply</button>
           </div>
-          <div class="payment-card">
-            <h2>📮 Recipient Info</h2>
-            <div class="recipient-card">
-              <h3>Delivery Details</h3>
-              <div class="recipient-info">
-                <p>
-                  <span class="recipient-label">Name:</span><br/>
-                  <span id="recipientName" style="color: #ffffff; font-weight: 600;">—</span>
-                </p>
-                <p>
-                  <span class="recipient-label">Email:</span><br/>
-                  <span id="recipientEmail" style="color: #ffffff; font-weight: 600;">—</span>
-                </p>
-                <p>
-                  <span class="recipient-label">Phone:</span><br/>
-                  <span id="recipientPhone" style="color: #ffffff; font-weight: 600;">—</span>
-                </p>
-                <p>
-                  <span class="recipient-label">Address:</span><br/>
-                  <span id="recipientAddress" style="color: #ffffff; font-weight: 600;">—</span>
-                </p>
-              </div>
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Sales Executive</strong>
+            <div class="job-details">Salary: $70,000/year<br>
+              Location: Tesla Showroom, Germany<br>
+              Type: Full-Time
             </div>
+            <button onclick="applyJob('Sales Executive')">Apply</button>
+          </div>
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Production Assistant</strong>
+            <div class="job-details">Salary: $45,000/year<br>
+              Location: Gigafactory Nevada<br>
+              Type: Full-Time
+            </div>
+            <button onclick="applyJob('Production Assistant')">Apply</button>
+          </div>
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Customer Care Specialist</strong>
+            <div class="job-details">Salary: $38,000/year<br>
+              Location: Tesla Munich Office<br>
+              Type: Entry-Level, Full-Time
+            </div>
+            <button onclick="applyJob('Customer Care Specialist')">Apply</button>
+          </div>
+          <div class="job-card">
+            <div class="job-legit">Verified Tesla Job</div>
+            <strong>Senior Systems Architect</strong>
+            <div class="job-details">Salary: $180,000/year<br>
+              Location: Tesla HQ, USA<br>
+              Type: Senior, Full-Time
+            </div>
+            <button onclick="applyJob('Senior Systems Architect')">Apply</button>
           </div>
         </div>
-        <div class="warning-box">
-          <strong>⚠️ Important Notice</strong>
-          <p>Please ensure you have sufficient Bitcoin balance. The payment is required for customs clearance and final delivery to Iceland. Once confirmed, your Tesla Model will proceed immediately to your delivery address.</p>
+        <div class="tesla-info">
+          <h3>About Tesla Company</h3>
+          <p>
+            Tesla, Inc. is a global leader in sustainable energy and automotive innovation. Founded by Elon Musk and headquartered in Palo Alto, California, Tesla is renowned for its electric vehicles, cutting-edge battery technology, and renewable energy solutions. With Gigafactories and showrooms worldwide—including Germany—Tesla is committed to accelerating the world's transition to sustainable energy.
+          </p>
+          <p>
+            Tesla's Model S, Model X, Model 3, and Model Y have set new standards for performance, safety, and innovation. Tesla also leads in autonomous driving technology and energy storage, shaping the future of transportation and clean energy.
+          </p>
+          <p>
+            To join Tesla's trading and career opportunities, you must have a valid Tesla Private Referral ID. All applications and trading activities are strictly vetted for authenticity and security.
+          </p>
         </div>
-        <div class="payment-actions">
-          <div class="btn-file-upload">
-            <input type="file" id="paymentFile" accept="image/*" onchange="handleFileUpload()" />
-            <label for="paymentFile">📸 Upload Payment Proof</label>
-            <div class="file-name" id="fileName"></div>
-          </div>
-          <button class="btn-primary" onclick="processPayment()" id="payBtn">Proceed to Confirmation</button>
-        </div>
-        <button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="goToPage('map')">Back to Tracking</button>
       </div>
-    </div>
-
-    <!-- PAGE 6: CONFIRMATION -->
-    <div class="page" id="page-confirmation">
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: 100%;"></div>
-      </div>
-      <div class="confirmation-container">
-        <div class="success-badge">✅</div>
-        <h1 class="confirmation-title">Payment Confirmed</h1>
-        <p class="confirmation-subtitle">Your Tesla Model delivery is now in final processing stage. Customs clearance is complete.</p>
-        <div class="confirmation-details">
-          <div class="detail-row">
-            <span class="detail-label">📦 Vehicle</span>
-            <span class="detail-value">2022 Tesla Model</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">💳 Clearance Fee</span>
-            <span class="detail-value">$850 USD</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">📍 Destination</span>
-            <span class="detail-value" id="confirmAddress">—</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">👤 Recipient</span>
-            <span class="detail-value" id="confirmName">—</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">📧 Contact Email</span>
-            <span class="detail-value" id="confirmEmail">—</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">⏱️ Delivery Time</span>
-            <span class="detail-value">48-72 Hours</span>
-          </div>
-        </div>
-        <img id="confirmImage" class="confirmation-image" src="" alt="Payment Confirmation" />
-        <div class="confirmation-actions">
-          <button class="btn-finish" onclick="completeTracking()">Complete Tracking</button>
-        </div>
-        <div class="support-contact">
-          <p>Questions about your delivery? Our support team is ready to help.</p>
-          <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank">💬 Contact Support 24/7</a>
-        </div>
+      <div class="footer">
+        Tesla Licence ® 2026 &mdash; All Rights Reserved<br>
+        Tesla, Inc. | Headquarters: 3500 Deer Creek Road, Palo Alto, CA, USA<br>
+        Gigafactory Berlin, Germany | <a href="https://www.tesla.com/de_DE/gigafactory-berlin" target="_blank">Learn More</a>
       </div>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Spin Modal -->
+  <div id="spinModal" class="spin-modal">
+    <div class="spin-content">
+      <div class="spin-arrow">▲</div>
+      <div class="spin-wheel" id="spinWheel"></div>
+      <div class="spin-prize" id="spinPrize"></div>
+      <button id="spinBtn" onclick="spinTheWheel()">Spin</button>
+    </div>
+  </div>
+
+  <!-- Delivery Modal with OpenStreetMap -->
+  <div id="deliveryModal" class="delivery-modal">
+    <div class="delivery-content">
+      <div class="delivery-title">
+        <button class="delivery-bell-btn" onclick="beepBell()" title="Tesla Delivery Bell">🔔</button>
+        TESLA MODEL S DELIVERY STATUS
+      </div>
+      <div id="deliveryBeep" class="delivery-bell-beep">Bell Beep! 🚚</div>
+      <div class="delivery-process-info">
+        <span id="deliveryInfo"></span>
+      </div>
+      <div id="deliveryWait" class="delivery-process-wait">Processing... Please wait for confirmation.</div>
+      <div id="deliveryDone" class="delivery-process-done" style="display:none;">ORDER SUCCESSFULLY REVIEWED AND DELIVERY 🚚 HAS STARTED</div>
+      <div id="deliveryMap" class="delivery-map" style="display:none;">
+        <div class="map-header">TESLA HQ ➔ 116 Reykjavik
+Iceland.</div>
+        <div id="osmMap"></div>
+      </div>
+      <div id="deliveryTrackInfo" class="delivery-track-info" style="display:none;">
+        Use TESLA VERIFICATION HASH-ID <b>[ #### ]</b> to track your delivery towards your destination.
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS (OpenStreetMap) -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    let userCache = {};
-    let map = null;
-    let currentMarker = null;
+    let users = {};
+    let currentUser = null;
+    const TESLA_REF_ID = "962081";
+    const TESLA_VERIF_HASH = "0196-6324-8349";
+    const SPECIAL_PHONE = "‪+3548504428‬";
+    const spinItems = [
+      "CYBER TRUCK",
+      "$50,000 BTC",
+      "WORKER LICENSE",
+      "TAX REFUND",
+      "$4,000 WEB3 TRADE COUPONS"
+    ];
+    let deliveryTimer = null;
+    let deliveryStarted = false;
+    let osmMapInstance = null;
 
-    function goToPage(pageId) {
-      const pages = document.querySelectorAll('.page');
-      pages.forEach(page => page.classList.remove('active'));
-      document.getElementById(`page-${pageId}`).classList.add('active');
-      updateProgress(pageId);
-      updateNavStatus(pageId);
-      window.scrollTo(0, 0);
-      if (pageId === 'map') setTimeout(() => initializeMap(), 100);
+    function showAuth(section) {
+      document.getElementById('regSection').classList.remove('active');
+      document.getElementById('loginSection').classList.remove('active');
+      if (section === 'register') {
+        document.getElementById('regSection').classList.add('active');
+      } else {
+        document.getElementById('loginSection').classList.add('active');
+        document.getElementById('specialLoginInfo').style.display = "block";
+      }
+      document.getElementById('regError').style.display = "none";
+      document.getElementById('loginError').style.display = "none";
     }
 
-    function initializeMap() {
-      if (map) return;
-      const teslaHQ = [37.3861, -122.0839];
-      const iceland = [64.9631, -19.0208];
-      map = L.map('map').setView([50, -30], 3);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap, CartoDB', maxZoom: 19 }).addTo(map);
-      
-      const startMarker = L.circleMarker(teslaHQ, { radius: 12, fillColor: '#dc143c', color: '#ff6b6b', weight: 3, opacity: 1, fillOpacity: 0.8 }).addTo(map);
-      startMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #dc143c;">ORIGIN</strong><br>Tesla Factory<br>Fremont, California</div>`);
-      
-      const endMarker = L.circleMarker(iceland, { radius: 12, fillColor: '#ff6b6b', color: '#dc143c', weight: 3, opacity: 1, fillOpacity: 0.8 }).addTo(map);
-      endMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #dc143c;">DESTINATION</strong><br>Iceland<br>Reykjavik</div>`);
-      
-      currentMarker = L.circleMarker(teslaHQ, { radius: 10, fillColor: '#00ff00', color: '#ffffff', weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
-      currentMarker.bindPopup(`<div style="color: #fff; background: #1a1a1a; padding: 10px; border-radius: 5px;"><strong style="color: #00ff00;">CURRENT LOCATION</strong><br>🚗 In Transit</div>`);
-      
-      L.polyline([teslaHQ, iceland], { color: '#dc143c', weight: 3, opacity: 0.8, dashArray: '10, 5' }).addTo(map);
-      const group = new L.featureGroup([startMarker, endMarker, currentMarker]);
-      map.fitBounds(group.getBounds().pad(0.1));
-      animateCurrentMarker();
+    function register() {
+      const fullName = document.getElementById("regFullName").value.trim();
+      const username = document.getElementById("regUsername").value.trim();
+      const email = document.getElementById("regEmail").value.trim().toLowerCase();
+      const phone = document.getElementById("regPhone").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const refID = document.getElementById("regReferral").value.trim();
+      const location = document.getElementById("regLocation").value.trim();
+      const errorDiv = document.getElementById('regError');
+      errorDiv.style.display = 'none';
+
+      if (!fullName || !username || !email || !phone || !password || !refID || !location) {
+        errorDiv.textContent = "All fields are required.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (refID !== TESLA_REF_ID) {
+        errorDiv.textContent = "TESLA IS A PRIVATE COMPANY. You need the special ID to register.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (users[username] || Object.values(users).some(u => u.email === email || u.phone === phone)) {
+        errorDiv.textContent = "This username, email, or phone number has already been registered.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+      users[username] = { fullName, username, email, phone, password, refID, location };
+      currentUser = users[username];
+      document.getElementById("authPage").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      updateDashboardUser();
+      triggerFirstGiftOrDelivery();
     }
 
-    function animateCurrentMarker() {
-      if (!currentMarker) return;
-      let pulseSize = 10, increasing = true;
-      setInterval(() => {
-        increasing ? (pulseSize += 0.5, pulseSize > 16 && (increasing = false)) : (pulseSize -= 0.5, pulseSize < 10 && (increasing = true));
-        currentMarker.setRadius(pulseSize);
-      }, 50);
+    function login() {
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.style.display = 'none';
+
+      let foundUser = users[username];
+      if (!username || !password) {
+        errorDiv.textContent = "Please enter both username and password.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (foundUser && foundUser.password === password) {
+        currentUser = foundUser;
+        document.getElementById("authPage").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        updateDashboardUser();
+        if (
+          (foundUser.phone === SPECIAL_PHONE || foundUser.email === SPECIAL_PHONE || foundUser.username === SPECIAL_PHONE) &&
+          foundUser.refID === TESLA_REF_ID
+        ) {
+          showDeliveryModal(foundUser);
+        } else {
+          showSpinModal();
+        }
+      } else {
+        errorDiv.textContent = "Invalid login credentials.";
+        errorDiv.style.display = 'block';
+      }
     }
 
-    function simulateTracking() {
-      const teslaHQ = [37.3861, -122.0839];
-      const iceland = [64.9631, -19.0208];
-      const locations = [
-        { name: 'Tesla Factory, CA', coords: teslaHQ, status: 'Depart' },
-        { name: 'Pacific Ocean', coords: [40.5, -130], status: 'Crossing Ocean' },
-        { name: 'Over Atlantic', coords: [50, -50], status: 'Mid-Atlantic' },
-        { name: 'Approaching Iceland', coords: [60, -25], status: 'Arrival Soon' },
-        { name: 'Reykjavik, Iceland', coords: iceland, status: 'Arrived' }
-      ];
-      let index = 0;
-      const interval = setInterval(() => {
-        if (index < locations.length) {
-          document.getElementById('statusLocation').textContent = locations[index].name;
-          document.getElementById('statusVehicle').textContent = locations[index].status;
-          if (currentMarker && map) {
-            currentMarker.setLatLng(locations[index].coords);
-            map.setView(locations[index].coords, map.getZoom());
+    function updateDashboardUser() {
+      document.getElementById("userDisplay").textContent =
+        `${currentUser.fullName} (${currentUser.username})`;
+    }
+
+    function applyJob(jobName) {
+      alert(`Your application for the position "${jobName}" is being processed securely.\nA Tesla HR representative will contact you via provided details.\nThank you for applying!`);
+      window.open("https://wa.me/message/OWQQV3ZNMCKNE1", "_blank");
+    }
+
+    function triggerFirstGiftOrDelivery() {
+      showSpinModal();
+    }
+
+    let spinning = false;
+
+    function showSpinModal() {
+      spinning = false;
+      document.getElementById("spinModal").style.display = "flex";
+      document.getElementById("spinPrize").textContent = "";
+      document.getElementById("spinBtn").disabled = false;
+      renderWheel();
+    }
+
+    function spinTheWheel() {
+      if (spinning) return;
+      spinning = true;
+      document.getElementById("spinBtn").disabled = true;
+      let cycles = 12 + Math.floor(Math.random() * 4);
+      let finalIndex = spinItems.length - 1;
+      let i = 0;
+      function animateSpin() {
+        let item = spinItems[i % spinItems.length];
+        document.getElementById("spinWheel").textContent = item;
+        i++;
+        if (i < cycles) {
+          setTimeout(animateSpin, 80 + i*8);
+        } else {
+          document.getElementById("spinWheel").textContent = spinItems[finalIndex];
+          document.getElementById("spinPrize").textContent =
+            `$4,000 WEB3 TRADE COUPONS will be added to your TRADE ACCOUNT once you activate it.`;
+          setTimeout(() => {
+            document.getElementById("spinModal").style.display = "none";
+          }, 3400);
+        }
+      }
+      animateSpin();
+    }
+
+    function renderWheel() {
+      document.getElementById("spinWheel").textContent = spinItems[0];
+      document.getElementById("spinPrize").textContent = "Spin to win your welcome prize!";
+      document.getElementById("spinBtn").disabled = false;
+    }
+
+    function showDeliveryModal(user) {
+      deliveryStarted = false;
+      document.getElementById("deliveryModal").style.display = "flex";
+      document.getElementById("deliveryBeep").style.display = "none";
+      document.getElementById("deliveryWait").style.display = "block";
+      document.getElementById("deliveryDone").style.display = "none";
+      document.getElementById("deliveryMap").style.display = "none";
+      document.getElementById("deliveryTrackInfo").style.display = "none";
+      // Use user's location or fallback
+      const userLocation = user.location || "Reykjavik,Iceland";
+      document.querySelector('.map-header').textContent = `TESLA HQ ➔ ${userLocation}`;
+      startDeliveryTimer(userLocation);
+    }
+
+    // Geocode any address worldwide using Nominatim
+    function geocodeLocation(address, callback) {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            callback([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+          } else {
+            callback([50.2600, 10.9639]); // fallback: Coburg
           }
-          index++;
-        } else clearInterval(interval);
-      }, 2000);
+        })
+        .catch(() => {
+          callback([50.2600, 10.9639]);
+        });
     }
 
-    function updateProgress(pageId) {
-      const progressMap = { splash: 0, registration: 20, 'tracking-select': 40, map: 50, payment: 75, confirmation: 100 };
-      const progressFill = document.querySelector('.progress-fill');
-      if (progressFill) progressFill.style.width = (progressMap[pageId] || 0) + '%';
+    function startDeliveryTimer(userLocation) {
+      let waitTime = 1800000;
+      if (location.hostname === "localhost") waitTime = 8000;
+      if (deliveryTimer) clearTimeout(deliveryTimer);
+      deliveryTimer = setTimeout(() => deliveryProcessStart(userLocation), waitTime);
     }
 
-    function updateNavStatus(pageId) {
-      const statusMap = { splash: 'Initialization', registration: 'Registration', 'tracking-select': 'Verification', map: 'Live Tracking', payment: 'Payment Processing', confirmation: 'Confirmed' };
-      document.getElementById('navStatus').textContent = 'Status: ' + (statusMap[pageId] || 'Tracking');
+    function deliveryProcessStart(userLocation) {
+      deliveryStarted = true;
+      document.getElementById("deliveryWait").style.display = "none";
+      document.getElementById("deliveryDone").style.display = "block";
+      document.getElementById("deliveryMap").style.display = "block";
+      document.getElementById("deliveryTrackInfo").style.display = "block";
+      setTimeout(() => initOsmMap(userLocation), 300);
     }
 
-    function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-    function validatePhone(phone) { return /^[\d\s+\-()]{7,}$/.test(phone); }
+    function initOsmMap(userLocation) {
+      geocodeLocation(userLocation, function(destCoords) {
+        if (osmMapInstance) {
+          osmMapInstance.remove();
+          osmMapInstance = null;
+        }
+        // Tesla HQ: Palo Alto, CA, USA [37.3947, -122.1503]
+        osmMapInstance = L.map('osmMap', {
+          center: [ (37.3947 + destCoords[0])/2, (-122.1503 + destCoords[1])/2 ],
+          zoom: 4,
+          zoomControl: false,
+          attributionControl: false
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(osmMapInstance);
 
-    function validateForm() {
-      const fullName = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const address = document.getElementById('address').value.trim();
-      const trackingNumber = document.getElementById('trackingNumber').value.trim();
-      let isValid = true;
-      document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('input, textarea').forEach(el => el.classList.remove('error'));
-      if (fullName.length < 3) { document.getElementById('fullName').classList.add('error'); document.getElementById('fullName').nextElementSibling.style.display = 'block'; isValid = false; }
-      if (!validateEmail(email)) { document.getElementById('email').classList.add('error'); document.getElementById('email').nextElementSibling.style.display = 'block'; isValid = false; }
-      if (!validatePhone(phone)) { document.getElementById('phone').classList.add('error'); document.getElementById('phone').nextElementSibling.style.display = 'block'; isValid = false; }
-      if (address.length < 10) { document.getElementById('address').classList.add('error'); document.getElementById('address').nextElementSibling.style.display = 'block'; isValid = false; }
-      if (trackingNumber.length === 0) { document.getElementById('trackingNumber').classList.add('error'); document.getElementById('trackingNumber').nextElementSibling.style.display = 'block'; isValid = false; }
-      return isValid;
+        // Tesla HQ marker
+        const teslaHQ = L.marker([37.3947, -122.1503]).addTo(osmMapInstance);
+        teslaHQ.bindPopup("Tesla HQ<br>Palo Alto, CA, USA").openPopup();
+
+        // User marker
+        const userMarker = L.marker(destCoords).addTo(osmMapInstance);
+        userMarker.bindPopup(`${userLocation}`);
+
+        // Route
+        const route = [
+          [37.3947, -122.1503],
+          destCoords
+        ];
+        L.polyline(route, {color: '#cc0000', weight: 4, dashArray: '10,6', opacity: 0.8}).addTo(osmMapInstance);
+
+        // Fit bounds
+        osmMapInstance.fitBounds([
+          [37.3947, -122.1503],
+          destCoords
+        ], {padding: [16,16]});
+      });
     }
 
-    function submitRegistration(event) {
-      event.preventDefault();
-      if (!validateForm()) return;
-      userCache = {
-        fullName: document.getElementById('fullName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        address: document.getElementById('address').value.trim(),
-        trackingNumber: document.getElementById('trackingNumber').value.trim()
-      };
-      document.getElementById('trackingDisplay').value = userCache.trackingNumber;
-      goToPage('tracking-select');
+    function beepBell() {
+      document.getElementById("deliveryBeep").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("deliveryBeep").style.display = "none";
+      }, 1500);
     }
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => { alert('Bitcoin address copied to clipboard!'); });
-    }
-
-    function handleFileUpload() {
-      const file = document.getElementById('paymentFile').files[0];
-      if (file) document.getElementById('fileName').textContent = '✓ File selected: ' + file.name;
-    }
-
-    function processPayment() {
-      const file = document.getElementById('paymentFile').files[0];
-      if (!file) { alert('Please upload a payment proof screenshot'); return; }
-      const reader = new FileReader();
-      reader.onload = function(e) { populateConfirmation(e.target.result); goToPage('confirmation'); };
-      reader.readAsDataURL(file);
-    }
-
-    function populateConfirmation(imageData) {
-      document.getElementById('recipientName').textContent = userCache.fullName;
-      document.getElementById('recipientEmail').textContent = userCache.email;
-      document.getElementById('recipientPhone').textContent = userCache.phone;
-      document.getElementById('recipientAddress').textContent = userCache.address;
-      document.getElementById('confirmName').textContent = userCache.fullName;
-      document.getElementById('confirmAddress').textContent = userCache.address;
-      document.getElementById('confirmEmail').textContent = userCache.email;
-      document.getElementById('confirmImage').src = imageData;
-    }
-
-    function completeTracking() {
-      alert('Thank you for using Tesla Delivery Tracker! Your vehicle will arrive within 48-72 hours. You will receive updates via email at: ' + userCache.email);
-      goToPage('splash');
-      resetForm();
-      map = null;
-      currentMarker = null;
-    }
-
-    function resetForm() {
-      document.getElementById('registrationForm').reset();
-      document.getElementById('paymentFile').value = '';
-      document.getElementById('fileName').textContent = '';
-      userCache = {};
-    }
-
-    window.onload = () => {
-      updateProgress('splash');
-      updateNavStatus('splash');
-    };
+    showAuth('register');
   </script>
 </body>
 </html>
