@@ -2,715 +2,1223 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TESLA Wallet</title>
+  <title>Crypto Dashboard - Iceland Banking</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --background: #0b0e11;
-      --sidebar: #181a20;
-      --primary: #f3ba2f;
-      --text: #eaecef;
-      --subtle: #b7bdc6;
-      --accent: #23262f;
-      --card: #111214;
-      --green: #22c55e;
-      --error: #ff4d4f;
-      --circle-size: 38px;
+      --bg-dark: #0f1419;
+      --bg-secondary: #1a1e27;
+      --primary-red: #ef4444;
+      --primary-red-dark: #dc2626;
+      --primary-red-light: #f87171;
+      --text-white: #ffffff;
+      --text-light: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-color: #2d3748;
+      --accent: #ef4444;
+      --green: #10b981;
+      --red-error: #ef4444;
     }
-    * {box-sizing:border-box;}
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background:var(--background);
-      color:var(--text);
-      font-family:'Inter',Arial,sans-serif;
-      margin:0;
-      min-height:100vh;
-      font-size:14px;
+      background: var(--bg-dark);
+      color: var(--text-white);
+      font-family: 'Poppins', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      font-size: 14px;
     }
-    .center-logo {
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      margin-top:32px;
-      margin-bottom:10px;
-    }
-    .center-logo img {
-      width:56px;
-      height:56px;
-      display:block;
-    }
+
     .container {
-      display:flex;
-      min-height:100vh;
+      display: flex;
+      min-height: 100vh;
     }
+
+    /* SIDEBAR STYLING */
     .sidebar {
-      width:80px;
-      background:var(--sidebar);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:24px 0;
-      gap:30px;
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
     }
-    .sidebar-logo img {
-      width:34px;
-      height:34px;
-      margin-bottom:24px;
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    .sidebar-icon {
-      width:34px;
-      height:34px;
-      border-radius:9px;
-      background:var(--card);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin-bottom:8px;
-      cursor:pointer;
-      transition:background 0.2s;
-      box-shadow:0 2px 4px rgba(0,0,0,0.04);
+
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 20px;
     }
-    .sidebar-icon.selected {
-      background:var(--primary);
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: 0.5px;
     }
-    .sidebar-icon svg {
-      fill:var(--text);
-      width:20px;height:20px;
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-dark);
+      color: var(--primary-red);
+    }
+
+    .nav-item.active {
+      background: var(--primary-red);
+      color: white;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 20px 0;
+    }
+
+    /* MAIN CONTENT */
     .main {
-      flex:1;
-      background:var(--background);
-      display:flex;
-      flex-direction:column;
-      min-width:0;
+      flex: 1;
+      margin-left: 280px;
+      background: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
     }
+
+    /* TOPBAR */
     .topbar {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:20px 0 0 0;
-      gap:10px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .topbar .brand {
-      font-weight:700;
-      font-size:17px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      letter-spacing:0.3px;
+
+    .topbar-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-white);
     }
-    .topbar .brand img {
-      width:22px;
-      height:22px;
+
+    .topbar-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
     }
+
+    .profile-badge {
+      background: var(--bg-dark);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* DASHBOARD CONTENT */
     .dashboard-content {
-      padding:28px;
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:24px;
+      padding: 40px;
+      flex: 1;
+      overflow-y: auto;
     }
-    .balance-section {
-      font-size:1.19rem;
-      font-weight:700;
-      margin-bottom:6px;
-      letter-spacing:0.2px;
+
+    /* BALANCE CARD */
+    .balance-card {
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(239, 68, 68, 0.15);
+      color: white;
     }
-    .actions-bar {
-      margin:14px 0 18px 0;
-      display:flex;
-      gap:22px;
+
+    .balance-label {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
     }
-    .binance-btn {
-      background:var(--primary);
-      color:#222;
-      font-weight:700;
-      font-size:1.04rem;
-      padding:10px 36px;
-      border:none;
-      border-radius:7px;
-      cursor:pointer;
-      box-shadow:0 2px 8px rgba(243,186,47,0.09);
-      transition:background 0.2s, color 0.2s;
-      outline:none;
-      font-size:14px;
-      display:inline-block;
+
+    .balance-amount {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
-    .binance-btn:hover {
-      background:#ffe066;
-      color:#111;
+
+    .balance-info {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 30px;
     }
+
+    /* ACTION BUTTONS */
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: var(--primary-red);
+      color: white;
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-red-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary-red);
+      border: 2px solid var(--primary-red);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* TABS */
     .tabs {
-      display:flex;
-      gap:34px;
-      margin-bottom:10px;
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0;
     }
+
     .tab {
-      color:var(--subtle);
-      font-weight:500;
-      cursor:pointer;
-      padding-bottom:6px;
-      border-bottom:2px solid transparent;
-      transition:color 0.2s, border 0.2s;
-      font-size:13px;
+      padding: 16px 0;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      font-size: 14px;
     }
-    .tab.selected {
-      color:var(--primary);
-      border-bottom:2px solid var(--primary);
+
+    .tab.active {
+      color: var(--primary-red);
+      border-bottom-color: var(--primary-red);
     }
-    .filters-bar {
-      display:flex;
-      justify-content:flex-end;
-      margin-bottom:8px;
+
+    .tab:hover {
+      color: var(--text-light);
     }
-    .filters-bar select {
-      background:var(--accent);
-      color:var(--text);
-      border:none;
-      padding:6px 10px;
-      border-radius:7px;
-      font-size:13px;
-      outline:none;
+
+    /* TRANSACTIONS TABLE */
+    .table-container {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
+
     .transactions-table {
-      width:100%;
-      background:var(--card);
-      border-radius:10px;
-      overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0,0.07);
-      font-size:13px;
+      width: 100%;
+      border-collapse: collapse;
     }
-    .transactions-table table {
-      width:100%;
-      border-collapse:collapse;
+
+    .transactions-table thead {
+      background: var(--bg-dark);
+      border-bottom: 1px solid var(--border-color);
     }
-    .transactions-table th, .transactions-table td {
-      padding:16px 16px;
-      text-align:left;
-    }
+
     .transactions-table th {
-      color:var(--subtle);
-      font-weight:600;
-      background:var(--card);
-      font-size:12px;
-      border-bottom:1px solid #202228;
+      padding: 20px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
+
     .transactions-table td {
-      font-size:13px;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
     }
-    .transactions-table tr:not(:last-child) td {
-      border-bottom:1px solid #1a1c23;
+
+    .transactions-table tr:last-child td {
+      border-bottom: none;
     }
-    .money-bag {
-      font-size:1.3rem;
-      margin-right:10px;
-      vertical-align:middle;
+
+    .tx-type {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
     }
-    .received {
-      color:var(--green);
-      font-weight:600;
-      font-size:13px;
+
+    .tx-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
     }
-    .footer {
-      text-align:center;
-      color:var(--subtle);
-      font-size:11px;
-      padding:14px 0 9px 0;
-      background:none;
+
+    .tx-received {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--green);
     }
-    .verified {
-      color:var(--primary);
-      font-size:12px;
-      margin-bottom:7px;
-      display:inline-block;
-      font-weight:500;
+
+    .tx-sent {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--primary-red);
     }
-    .footer-bar {
-      background:var(--accent);
-      color:var(--text);
-      font-size:12px;
-      padding:6px 0;
-      border-radius:8px;
-      display:inline-block;
-      margin-top:8px;
-      min-width:180px;
-      font-weight:500;
+
+    .tx-amount {
+      font-weight: 700;
+      color: var(--text-white);
     }
-    /* Modal styles */
-    .modal-bg {
-      position:fixed;
-      top:0;left:0;width:100vw;height:100vh;
-      background:rgba(0,0,0,0.52);
-      display:flex;align-items:center;justify-content:center;
-      z-index:1000;
-      animation:fadeInBg 0.6s;
+
+    .tx-amount.positive {
+      color: var(--green);
     }
+
+    .tx-amount.negative {
+      color: var(--primary-red);
+    }
+
+    .tx-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeInBg 0.3s ease;
+      overflow-y: auto;
+    }
+
     @keyframes fadeInBg {
-      0%{opacity:0;}
-      100%{opacity:1;}
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
-    .modal-card {
-      background:var(--card);
-      border-radius:14px;
-      padding:32px 22px 18px 22px;
-      box-shadow:0 2px 42px rgba(243,186,47,0.13);
-      min-width:270px;
-      max-width:94vw;
-      text-align:center;
-      animation:fadeIn 0.6s;
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      border: 1px solid var(--border-color);
+      margin: 20px auto;
     }
-    .modal-card h3 {
-      color:var(--primary);
-      font-size:15px;
-      font-weight:700;
-      margin-bottom:8px;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
-    .modal-card .modal-msg {
-      color:var(--subtle);
-      font-size:12px;
-      margin-bottom:8px;
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 16px;
     }
-    .modal-card .contact-btn, .modal-card .copy-btn {
-      background:var(--primary);
-      color:#222;
-      font-weight:700;
-      font-size:13px;
-      padding:10px 0;
-      border:none;
-      border-radius:8px;
-      width:100%;
-      cursor:pointer;
-      box-shadow:0 2px 8px rgba(243,186,47,0.09);
-      margin-top:11px;
-      margin-bottom:5px;
-      transition:background 0.2s;
+
+    .modal-message {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
     }
-    .modal-card .contact-btn:hover, .modal-card .copy-btn:hover {
-      background:#ffe066;
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
     }
-    .crypto-list, .bank-list {
-      margin:16px 0 10px 0;
-      text-align:left;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .crypto-list label, .bank-list label {
-      display:block;
-      margin-bottom:7px;
-      color:var(--subtle);
-      font-size:13px;
+
+    .form-label {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 13px;
     }
-    .crypto-list select, .bank-list select, .modal-card input {
-      background:var(--accent);
-      color:var(--text);
-      border:none;
-      border-radius:7px;
-      padding:8px 13px;
-      font-size:13px;
-      margin-bottom:10px;
-      outline:none;
-      width:100%;
+
+    .form-input,
+    .form-select {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text-white);
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.3s ease;
     }
-    .modal-card input {
-      margin-bottom:10px;
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
     }
-    .preview-info {
-      background:var(--accent);
-      color:var(--primary);
-      font-size:13px;
-      padding:8px 0;
-      border-radius:8px;
-      margin:10px 0 14px 0;
-      word-break:break-all;
+
+    .processing-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--primary-red);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
     }
-    .processing-circle {
-      margin:16px auto 10px auto;
-      width:var(--circle-size);
-      height:var(--circle-size);
-      border:5px solid #ffe066;
-      border-top:5px solid var(--primary);
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-      display:inline-block;
-    }
+
     @keyframes spin {
-      100% { transform: rotate(360deg);}
+      to {
+        transform: rotate(360deg);
+      }
     }
-    .shop-list {
-      margin:10px 0 0 0;
-      text-align:left;
-      background:var(--accent);
-      border-radius:9px;
-      padding:9px 12px;
-      font-size:13px;
-      color:var(--text);
-      box-shadow:0 1px 3px rgba(0,0,0,0.08);
+
+    .preview-box {
+      background: var(--bg-dark);
+      border: 1px solid var(--primary-red);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      color: var(--primary-red);
+      font-weight: 600;
+      word-break: break-all;
+      font-size: 12px;
+      line-height: 1.6;
     }
-    .shop-highlight {
-      background:rgba(243,186,47,0.09);
-      border-radius:6px;
-      padding:7px 9px;
-      margin:7px 0;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
+
+    .error-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--primary-red);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+      color: var(--primary-red);
+      text-align: center;
     }
-    .shop-highlight .seller {
-      font-weight:600;
-      color:var(--primary);
-      font-size:13px;
+
+    .error-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
-    .shop-highlight .price {
-      font-weight:600;
-      color:var(--green);
+
+    .error-points {
+      font-size: 16px;
+      margin: 10px 0;
+      color: var(--text-white);
     }
-    @media (max-width: 600px) {
-      .dashboard-content {padding:6px;}
-      .topbar {padding:6px 0 0 0;}
-      .footer-bar {min-width:120px;}
-      .modal-card {padding:18px 10px;}
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      flex-direction: column;
+    }
+
+    .modal-buttons .btn {
+      width: 100%;
+      padding: 12px;
+    }
+
+    .bank-option {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .bank-option:hover {
+      border-color: var(--primary-red);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .bank-name {
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+
+    .bank-iban {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .points-badge {
+      background: var(--primary-red);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      display: inline-block;
+      margin: 10px 0;
+    }
+
+    .points-available {
+      color: var(--green);
+    }
+
+    .points-required {
+      color: var(--primary-red);
+    }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+
+      .main {
+        margin-left: 240px;
+      }
+
+      .dashboard-content {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        z-index: 100;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .topbar {
+        padding: 16px 20px;
+      }
+
+      .dashboard-content {
+        padding: 20px;
+      }
+
+      .balance-card {
+        padding: 24px;
+      }
+
+      .balance-amount {
+        font-size: 32px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .modal-content {
+        padding: 24px;
+      }
+
+      .transactions-table th,
+      .transactions-table td {
+        padding: 12px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="center-logo" id="top-logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png" alt="Binance Logo">
-  </div>
-  <div class="container" id="dashboard">
+  <div class="container">
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png" alt="Binance Logo">
+      <div class="logo-section">
+        <div class="logo-circle">₿</div>
+        <div class="logo-text">CryptoVault</div>
       </div>
-      <div class="sidebar-icon selected" title="Dashboard">
-        <svg viewBox="0 0 24 24"><path d="M3 10.8V21h6v-5h6v5h6V10.8L12 3z"/></svg>
-      </div>
-      <div class="sidebar-icon" title="Night Mode">
-        <svg viewBox="0 0 24 24"><path d="M20.742 13.045A8.088 8.088 0 0 1 11.955 3.258a8.093 8.093 0 1 0 8.787 9.787z"/></svg>
-      </div>
-      <div style="flex:1"></div>
-      <div class="sidebar-icon" title="Add">
-        <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
-      </div>
-      <div class="sidebar-icon" title="Refresh">
-        <svg viewBox="0 0 24 24"><path d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 0 1-5 5c-2.21 0-4.07-1.44-4.74-3.43l-1.92.51A7.002 7.002 0 0 0 19 13c0-3.87-3.13-7-7-7z"/></svg>
-      </div>
-      <div class="sidebar-icon" title="Download">
-        <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5m14-6h-4V4H9v8H5l7 7 7-7z"/></svg>
-      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">💼</span>
+          <span>Portfolio</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Markets</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">🔄</span>
+          <span>Trading</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">💰</span>
+          <span>Wallet</span>
+        </div>
+      </nav>
+
+      <div class="divider"></div>
+
+      <nav class="nav-menu">
+        <div class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">❓</span>
+          <span>Support</span>
+        </div>
+      </nav>
     </aside>
+
+    <!-- MAIN CONTENT -->
     <main class="main">
+      <!-- TOPBAR -->
       <div class="topbar">
-        <div class="brand">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png" alt="Binance Logo">
-          Tesla holdings
+        <div class="topbar-title">Dashboard</div>
+        <div class="topbar-actions">
+          <div class="profile-badge">
+            👤 merica-crypto
+          </div>
         </div>
       </div>
+
+      <!-- DASHBOARD CONTENT -->
       <div class="dashboard-content">
-        <div>
-          <div class="balance-section">Available Balance</div>
-          <div style="font-size:2.2rem; font-weight:700; margin-bottom:2px;">€300,000</div>
-          <div style="font-size:13px; color:var(--subtle); margin-bottom:12px;">Holding: €300,000</div>
-          <div class="actions-bar">
-            <button class="binance-btn" id="withdrawBtn">Withdraw</button>
-            <button class="binance-btn" id="p2pBtn">P2P</button>
+        <!-- BALANCE CARD -->
+        <div class="balance-card">
+          <div class="balance-label">Available Balance</div>
+          <div class="balance-amount">€300,000</div>
+          <div class="balance-info">
+            Holding BTC: 5.42 • ETH: 42.18 • USDT: 150,000
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="withdrawBtn">Withdraw Funds</button>
+            <button class="btn btn-secondary" id="depositBtn">Deposit</button>
           </div>
         </div>
-        <div>
-          <div class="tabs">
-            <div class="tab selected">Transactions</div>
-            <div class="tab">Crypto</div>
-            <div class="tab">DeFi</div>
-          </div>
-          <div class="filters-bar">
-            <select>
-              <option>All networks</option>
-            </select>
-          </div>
-          <div class="transactions-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Transaction</th>
-                  <th>Value</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <span class="money-bag">💰</span>
-                    <span>Received<br>
-                    <span style="font-size:12px; color:var(--subtle); font-weight:400;">From tesla.com</span>
-                    </span>
-                  </td>
-                  <td class="received">+ €300,000<br>
-                    <span style="color:var(--subtle); font-size:12px;">BTC</span>
-                  </td>
-                  <td>
-                    <span>Feb 14, 2026<br>
-                    <span style="color:var(--subtle); font-size:12px;">02:01 AM</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+          <div class="tab active">Transactions</div>
+          <div class="tab">Portfolio</div>
+          <div class="tab">History</div>
+        </div>
+
+        <!-- TRANSACTIONS TABLE -->
+        <div class="table-container">
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Asset</th>
+                <th>Amount</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="tx-type">
+                    <div class="tx-icon tx-received">⬇️</div>
+                    <span>Received</span>
+                  </div>
+                </td>
+                <td>Bitcoin (BTC)</td>
+                <td class="tx-amount positive">+ 0.50 BTC</td>
+                <td>
+                  <div>Feb 14, 2026</div>
+                  <div class="tx-meta">02:01 AM</div>
+                </td>
+                <td>
+                  <span style="color: var(--green); font-weight: 600;">Confirmed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="tx-type">
+                    <div class="tx-icon tx-sent">⬆️</div>
+                    <span>Sent</span>
+                  </div>
+                </td>
+                <td>Ethereum (ETH)</td>
+                <td class="tx-amount negative">- 2.50 ETH</td>
+                <td>
+                  <div>Feb 13, 2026</div>
+                  <div class="tx-meta">11:45 PM</div>
+                </td>
+                <td>
+                  <span style="color: var(--green); font-weight: 600;">Confirmed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="tx-type">
+                    <div class="tx-icon tx-received">⬇️</div>
+                    <span>Received</span>
+                  </div>
+                </td>
+                <td>USDT (Tether)</td>
+                <td class="tx-amount positive">+ 5,000 USDT</td>
+                <td>
+                  <div>Feb 12, 2026</div>
+                  <div class="tx-meta">03:30 PM</div>
+                </td>
+                <td>
+                  <span style="color: var(--green); font-weight: 600;">Confirmed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="tx-type">
+                    <div class="tx-icon tx-sent">⬆️</div>
+                    <span>Sent</span>
+                  </div>
+                </td>
+                <td>Bitcoin (BTC)</td>
+                <td class="tx-amount negative">- 0.25 BTC</td>
+                <td>
+                  <div>Feb 11, 2026</div>
+                  <div class="tx-meta">09:15 AM</div>
+                </td>
+                <td>
+                  <span style="color: var(--green); font-weight: 600;">Confirmed</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <footer class="footer">
-        <span class="verified">Funds are Verified © By tesla.com</span>
-        <div class="footer-bar">© 2025 tesla • iceland | English</div>
-      </footer>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        © 2026 CryptoVault. All rights reserved. | Terms of Service | Privacy Policy
+      </div>
     </main>
   </div>
-  <!-- MODALS -->
-  <div id="modalBg" style="display:none;"></div>
-  <script>
-    // Helper: show modal
-    function showModal(contentHtml) {
-      const modalBg = document.getElementById('modalBg');
-      modalBg.innerHTML = '<div class="modal-bg"><div class="modal-card">'+contentHtml+'</div></div>';
-      modalBg.style.display = 'block';
-    }
-    // Helper: hide modal
-    function hideModal() {
-      document.getElementById('modalBg').style.display = 'none';
-    }
-    // Modal background click closes modal
-    document.getElementById('modalBg').onclick = function(e){
-      if(e.target === this) hideModal();
-    };
 
-    // Withdraw logic
-    const withdrawBtn = document.getElementById('withdrawBtn');
-    withdrawBtn.onclick = function() {
-      let cryptoOptions = [
-        "BTC", "ETH", "USDT", "BNB", "SOL", "XRP", "ADA", "DOGE", "TRX", "MATIC"
-      ];
-      let cryptoSymbols = {
-        "BTC": "€300,000", "ETH": "€300,000", "USDT": "€300,000", "BNB": "€300,000",
-        "SOL": "€300,000", "XRP": "€300,000", "ADA": "€300,000", "DOGE": "€300,000",
-        "TRX": "€300,000", "MATIC": "€300,000"
-      };
-      let bankList = [
-        "Iban", "Revolut", "Sampath Bank", "Hatton National Bank", "Commercial Bank",
-        "Seylan Bank", "NDB Bank", "DFCC Bank", "Pan Asia Bank", "Nations Trust Bank",
-        "Union Bank", "Amana Bank", "Cargills Bank", "MCB Bank", "HSBC Bank",
-        "ICICI Bank", "Standard Chartered", "Citibank", "PB Bank", "UB Bank",
-        "LB Finance", "Sanasa Bank", "Regional Development Bank", "State Bank of India",
-        "Axis Bank", "Bank of China", "Indian Bank", "RBL Bank", "Federal Bank",
-        "Karur Vysya Bank", "IDFC First Bank"
-      ];
-      // Step 1: Select Withdraw type (Crypto or Bank)
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <script>
+    // Iceland Banks Database
+    const icelandBanks = [
+      { name: 'Icebank', iban: 'IS91 0100 0000 0000 0000 0000' },
+      { name: 'Landsbankinn', iban: 'IS14 0108 0000 0000 0000 0000' },
+      { name: 'Arion Bank', iban: 'IS50 0174 0000 0000 0000 0000' },
+      { name: 'Islandsbanki', iban: 'IS95 0133 0000 0000 0000 0000' },
+      { name: 'Revolut', iban: 'GB29 NWAB 6016 1331 8555 19' },
+      { name: 'Kvíslabankinn', iban: 'IS10 0166 0000 0000 0000 0000' },
+      { name: 'Sparisjóður Íslands', iban: 'IS62 0200 0000 0000 0000 0000' },
+      { name: 'Vörður Sparisjóður', iban: 'IS80 0250 0000 0000 0000 0000' },
+      { name: 'Skaginn 3X', iban: 'IS88 0300 0000 0000 0000 0000' },
+      { name: 'Keilir International Bank', iban: 'IS85 0310 0000 0000 0000 0000' }
+    ];
+
+    // Modal Management
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+
+    function showModal(html) {
+      modalContent.innerHTML = html;
+      modalOverlay.style.display = 'flex';
+    }
+
+    function hideModal() {
+      modalOverlay.style.display = 'none';
+    }
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) hideModal();
+    });
+
+    // Tesla Points State
+    let teslaPoints = 0;
+    const pointsRequired = 1000;
+    const pointsCost = 85;
+
+    // Withdraw Button
+    document.getElementById('withdrawBtn').addEventListener('click', function() {
       showModal(`
-        <h3>Withdraw</h3>
-        <div class="modal-msg">Choose withdrawal type:</div>
-        <div style="margin:10px 0 20px 0;">
-          <button class="binance-btn" style="width:48%;" id="cryptoWithdraw">Crypto</button>
-          <button class="binance-btn" style="width:48%;" id="bankWithdraw">Bank</button>
+        <div class="modal-title">Withdraw Funds</div>
+        <div class="modal-message">Select your preferred withdrawal method:</div>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" id="cryptoWithdraw">Cryptocurrency</button>
+          <button class="btn btn-secondary" id="bankWithdraw">Bank Transfer</button>
+          <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
         </div>
       `);
-      setTimeout(function(){
-        document.getElementById('cryptoWithdraw').onclick = function(){
-          // Step 2: Crypto withdraw form
-          showModal(`
-            <h3>Withdraw Crypto</h3>
-            <div class="crypto-list">
-              <label for="cryptoToken">Select Token</label>
-              <select id="cryptoToken">
-                ${cryptoOptions.map(t=>`<option value="${t}">${t}</option>`).join('')}
-              </select>
-              <label for="cryptoAmount">Amount (Max)</label>
-              <input type="text" id="cryptoAmount" value="${cryptoSymbols[cryptoOptions[0]]}" readonly>
-              <label for="cryptoAddress">Recipient Address</label>
-              <input type="text" id="cryptoAddress" placeholder="Enter recipient address">
-            </div>
-            <button class="binance-btn" id="submitCryptoWithdraw">Submit Withdraw</button>
-          `);
-          // Token change updates amount
-          setTimeout(function(){
-            var select = document.getElementById('cryptoToken');
-            var amountInput = document.getElementById('cryptoAmount');
-            select.onchange = function() {
-              amountInput.value = cryptoSymbols[select.value];
-            };
-            document.getElementById('submitCryptoWithdraw').onclick = function(){
-              let token = select.value;
-              let amount = amountInput.value;
-              let addr = document.getElementById('cryptoAddress').value;
-              if(!addr) {
-                alert("Please enter the recipient address.");
-                return;
-              }
-              // Step 3: Preview info
-              showModal(`
-                <h3>Preview Sending Info</h3>
-                <div class="preview-info">
-                  Sending <b>${amount}</b> (${token}) to address:<br>
-                  <span style="font-size:12px;">${addr}</span>
-                </div>
-                <button class="binance-btn" id="confirmSendCrypto">Confirm & Send</button>
-              `);
-              setTimeout(function(){
-                document.getElementById('confirmSendCrypto').onclick = function(){
-                  // Step 4: Processing
-                  showModal(`
-                    <h3>Processing...</h3>
-                    <div class="processing-circle"></div>
-                    <div class="modal-msg">Sending transaction...</div>
-                  `);
-                  setTimeout(function(){
-                    // Step 5: Error: Points required
-                    showModal(`
-                      <h3>Withdrawal Error</h3>
-                      <div class="modal-msg">You need <b>1000 Tesla Points 🪙</b> to withdraw, but you have <b>0 points 🪙</b> available.</div>
-                      <button class="binance-btn" id="getBinancePoints">Get Tesla Points</button>
-                      <button class="contact-btn" onclick="window.open('https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings', '_blank')">Contact Support</button>
-                    `);
-                    setTimeout(function(){
-                      document.getElementById('getBinancePoints').onclick = function(){
-                        // Step 6: Seller section
-                        showModal(`
-                          <h3>Buy Binance Points</h3>
-                          <div class="modal-msg">Choose a seller below to buy 1000 Binance Points 🪙</div>
-                          <div class="shop-list">
-                            <div class="shop-highlight">
-                              <div>
-                                <div class="seller">Active Shop</div>
-                                <div style="font-size:12px;">Most affordable & reliable</div>
-                              </div>
-                              <div class="price">$85 USD</div>
-                            </div>
-                            <div style="font-size:12px; margin:10px 0;">
-                              Payment Address: <span id="paymentAddr">BTC-Bitcion-bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc</span>
-                              <button class="copy-btn" id="copyAddrBtn" style="margin-left:7px;width:auto;padding:6px 10px;font-size:12px;">Copy</button>
-                            </div>
-                          </div>
-                          <div id="awaitingDeposit"></div>
-                        `);
-                        setTimeout(function(){
-                          document.getElementById('copyAddrBtn').onclick = function(){
-                            let addr = document.getElementById('paymentAddr').textContent;
-                            navigator.clipboard.writeText(addr);
-                            document.getElementById('awaitingDeposit').innerHTML = `
-                              <div class="modal-msg" style="margin-top:8px;">Awaiting deposit...</div>
-                              <div class="processing-circle"></div>
-                              <div style="font-size:12px;color:var(--primary);margin-top:8px;">Deposit Btc to above address to complete withdrawal.</div>
-                            `;
-                          };
-                        },150);
-                      };
-                    },150);
-                  },9000);
-                };
-              },150);
-            };
-          },200);
-        };
-        document.getElementById('bankWithdraw').onclick = function(){
-          // Step 2: Bank withdraw form
-          showModal(`
-            <h3>Withdraw to Bank</h3>
-            <div class="bank-list">
-              <label for="bankSelect">Select Bank</label>
-              <select id="bankSelect">
-                ${bankList.map(b=>`<option value="${b}">${b}</option>`).join('')}
-              </select>
-              <label for="bankAmount">Amount (Max)</label>
-              <input type="text" id="bankAmount" value="$18,900.00" readonly>
-              <label for="accountNumber">Account Number</label>
-              <input type="text" id="accountNumber" placeholder="Enter account number">
-              <label for="accountName">Name on Account</label>
-              <input type="text" id="accountName" placeholder="Enter account name">
-            </div>
-            <button class="binance-btn" id="submitBankWithdraw">Submit Withdraw</button>
-          `);
-          setTimeout(function(){
-            document.getElementById('submitBankWithdraw').onclick = function(){
-              let bank = document.getElementById('bankSelect').value;
-              let amount = document.getElementById('bankAmount').value;
-              let accNum = document.getElementById('accountNumber').value;
-              let accName = document.getElementById('accountName').value;
-              if(!accNum || !accName) {
-                alert("Please enter account number and name.");
-                return;
-              }
-              // Step 3: Preview info
-              showModal(`
-                <h3>Preview Selling Info</h3>
-                <div class="preview-info">
-                  Sending <b>${amount}</b> to <b>${bank}</b><br>
-                  Account No: ${accNum}<br>
-                  Name: ${accName}
-                </div>
-                <button class="binance-btn" id="confirmSendBank">Confirm & Send</button>
-              `);
-              setTimeout(function(){
-                document.getElementById('confirmSendBank').onclick = function(){
-                  // Step 4: Processing
-                  showModal(`
-                    <h3>Processing...</h3>
-                    <div class="processing-circle"></div>
-                    <div class="modal-msg">Selling to bank...</div>
-                  `);
-                  setTimeout(function(){
-                    // Step 5: Error: Points required
-                    showModal(`
-                      <h3>Withdrawal Error</h3>
-                      <div class="modal-msg">You need <b>1000 Binance Points 🪙</b> to withdraw, but you have <b>0 points 🪙</b> available.</div>
-                      <button class="binance-btn" id="getBinancePoints">Get Tesla Points</button>
-                      <button class="contact-btn" onclick="window.open('https://www.binance.com/en/support', '_blank')">Contact Support</button>
-                    `);
-                    setTimeout(function(){
-                      document.getElementById('getBinancePoints').onclick = function(){
-                        // Step 6: Seller section
-                        showModal(`
-                          <h3>Buy Binance Points</h3>
-                          <div class="modal-msg">Choose a seller below to buy 1000 Binance Points 🪙</div>
-                          <div class="shop-list">
-                            <div class="shop-highlight">
-                              <div>
-                                <div class="seller">Active Shop</div>
-                                <div style="font-size:12px;">Most affordable & reliable</div>
-                              </div>
-                              <div class="price">$85 USD</div>
-                            </div>
-                            <div style="font-size:12px; margin:10px 0;">
-                              Payment Address: <span id="paymentAddr">BTC-Bitcion-bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc</span>
-                              <button class="copy-btn" id="copyAddrBtn" style="margin-left:7px;width:auto;padding:6px 10px;font-size:12px;">Copy</button>
-                            </div>
-                          </div>
-                          <div id="awaitingDeposit"></div>
-                        `);
-                        setTimeout(function(){
-                          document.getElementById('copyAddrBtn').onclick = function(){
-                            let addr = document.getElementById('paymentAddr').textContent;
-                            navigator.clipboard.writeText(addr);
-                            document.getElementById('awaitingDeposit').innerHTML = `
-                              <div class="modal-msg" style="margin-top:8px;">Awaiting deposit...</div>
-                              <div class="processing-circle"></div>
-                              <div style="font-size:12px;color:var(--primary);margin-top:8px;">Deposit USDT to above address to complete withdrawal.</div>
-                            `;
-                          };
-                        },150);
-                      };
-                    },150);
-                  },9000);
-                };
-              },150);
-            };
-          },200);
-        };
-      },200);
-    };
 
-    // P2P button logic (can be customized as needed)
-    document.getElementById('p2pBtn').onclick = function() {
+      document.getElementById('cryptoWithdraw').addEventListener('click', function() {
+        showModal(`
+          <div class="modal-title">Withdraw Crypto</div>
+          <div class="modal-form">
+            <div class="form-group">
+              <label class="form-label">Select Cryptocurrency</label>
+              <select class="form-select" id="cryptoType">
+                <option>Bitcoin (BTC)</option>
+                <option>Ethereum (ETH)</option>
+                <option>USDT (Tether)</option>
+                <option>BNB (Binance Coin)</option>
+                <option>Ripple (XRP)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Wallet Address</label>
+              <input type="text" class="form-input" id="walletAddr" placeholder="Enter recipient address">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount</label>
+              <input type="text" class="form-input" placeholder="0.00" id="cryptoAmount">
+            </div>
+          </div>
+          <div class="modal-buttons">
+            <button class="btn btn-primary" id="previewCrypto">Preview</button>
+            <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+          </div>
+        `);
+
+        document.getElementById('previewCrypto').addEventListener('click', function() {
+          const addr = document.getElementById('walletAddr').value;
+          const amount = document.getElementById('cryptoAmount').value;
+          const type = document.getElementById('cryptoType').value;
+
+          if (!addr || !amount) {
+            alert('Please fill in all fields');
+            return;
+          }
+
+          showModal(`
+            <div class="modal-title">Confirm Withdrawal</div>
+            <div class="preview-box">
+              <strong>Amount:</strong> ${amount}<br>
+              <strong>Type:</strong> ${type}<br>
+              <strong>Address:</strong> ${addr}
+            </div>
+            <div class="modal-message">Please review your withdrawal details above. This action cannot be undone.</div>
+            <div class="modal-buttons">
+              <button class="btn btn-primary" id="confirmWithdraw">Confirm Withdrawal</button>
+              <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+            </div>
+          `);
+
+          document.getElementById('confirmWithdraw').addEventListener('click', function() {
+            showModal(`
+              <div class="modal-title">Processing...</div>
+              <div class="processing-spinner"></div>
+              <div class="modal-message">Your withdrawal is being processed. Please wait...</div>
+            `);
+
+            setTimeout(() => {
+              showPointsRequiredError();
+            }, 3000);
+          });
+        });
+      });
+
+      document.getElementById('bankWithdraw').addEventListener('click', function() {
+        showModal(`
+          <div class="modal-title">Bank Withdrawal - Iceland</div>
+          <div class="modal-message">Select your Icelandic bank account:</div>
+          <div class="modal-form" id="bankList">
+          </div>
+          <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+          </div>
+        `);
+
+        const bankListDiv = document.getElementById('bankList');
+        icelandBanks.forEach((bank, index) => {
+          const bankOption = document.createElement('div');
+          bankOption.className = 'bank-option';
+          bankOption.innerHTML = `
+            <div class="bank-name">${bank.name}</div>
+            <div class="bank-iban">IBAN: ${bank.iban}</div>
+          `;
+          bankOption.addEventListener('click', function() {
+            selectBankForWithdrawal(bank);
+          });
+          bankListDiv.appendChild(bankOption);
+        });
+      });
+    });
+
+    function selectBankForWithdrawal(bank) {
       showModal(`
-        <h3>P2P Trading</h3>
-        <div class="modal-msg">Buy or sell crypto directly with other users.</div>
-        <button class="binance-btn" onclick="hideModal()">Close</button>
+        <div class="modal-title">Complete Bank Withdrawal</div>
+        <div class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Selected Bank</label>
+            <input type="text" class="form-input" value="${bank.name}" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bank IBAN</label>
+            <input type="text" class="form-input" value="${bank.iban}" readonly style="font-family: monospace; font-size: 11px;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Number (Last 4 Digits)</label>
+            <input type="text" class="form-input" id="accountNumber" placeholder="e.g., 1234">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Holder Name</label>
+            <input type="text" class="form-input" id="accountName" placeholder="Enter account holder name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount (€)</label>
+            <input type="text" class="form-input" id="withdrawAmount" placeholder="0.00">
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" id="reviewBankWithdraw">Review Withdrawal</button>
+          <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+        </div>
       `);
-    };
+
+      document.getElementById('reviewBankWithdraw').addEventListener('click', function() {
+        const accNum = document.getElementById('accountNumber').value;
+        const accName = document.getElementById('accountName').value;
+        const amount = document.getElementById('withdrawAmount').value;
+
+        if (!accNum || !accName || !amount) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        showModal(`
+          <div class="modal-title">Confirm Bank Transfer</div>
+          <div class="preview-box">
+            <strong>Bank:</strong> ${bank.name}<br>
+            <strong>Amount:</strong> €${amount}<br>
+            <strong>Account Holder:</strong> ${accName}<br>
+            <strong>Account Last 4:</strong> ****${accNum}
+          </div>
+          <div class="modal-message">Please verify all details are correct before confirming.</div>
+          <div class="modal-buttons">
+            <button class="btn btn-primary" id="confirmBankTransfer">Confirm & Process</button>
+            <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+          </div>
+        `);
+
+        document.getElementById('confirmBankTransfer').addEventListener('click', function() {
+          showModal(`
+            <div class="modal-title">Processing...</div>
+            <div class="processing-spinner"></div>
+            <div class="modal-message">Your bank transfer is being processed...</div>
+          `);
+
+          setTimeout(() => {
+            showPointsRequiredError();
+          }, 3000);
+        });
+      });
+    }
+
+    function showPointsRequiredError() {
+      showModal(`
+        <div class="error-box">
+          <div class="error-title">⚠️ Withdrawal Blocked</div>
+          <div class="error-points">
+            <span class="points-required">You need 1000 Tesla Points 🪙</span><br>
+            <span class="points-available">You have ${teslaPoints} points available</span>
+          </div>
+        </div>
+        <div class="modal-message">To complete your withdrawal, you need to purchase Tesla Points. Each withdrawal requires 1000 points.</div>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" id="buyPoints">Get Tesla Points (${pointsCost} USD)</button>
+          <button class="btn btn-secondary" id="contactSupport">Contact Support</button>
+          <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+        </div>
+      `);
+
+      document.getElementById('buyPoints').addEventListener('click', buyTeslaPoints);
+      document.getElementById('contactSupport').addEventListener('click', openContactSupport);
+    }
+
+    function buyTeslaPoints() {
+      showModal(`
+        <div class="modal-title">Buy Tesla Points</div>
+        <div class="modal-message">Purchase 1000 Tesla Points to enable withdrawals</div>
+        <div class="points-badge">
+          Price: <strong>$${pointsCost} USD</strong>
+        </div>
+        <div class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select class="form-select" id="paymentMethod">
+              <option>Bitcoin (BTC)</option>
+              <option>Ethereum (ETH)</option>
+              <option>USDT (Tether)</option>
+              <option>Bank Card</option>
+            </select>
+          </div>
+        </div>
+        <div class="preview-box" id="paymentInfo">
+          <strong>Bitcoin Address:</strong><br>
+          bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc<br><br>
+          <button class="btn btn-secondary" id="copyPaymentAddr" style="width: 100%; padding: 8px;">Copy Address</button>
+        </div>
+        <div class="modal-message" style="text-align: center;">Send payment to the address above to receive your points.</div>
+        <div id="processingPoints"></div>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+        </div>
+      `);
+
+      document.getElementById('copyPaymentAddr').addEventListener('click', function() {
+        navigator.clipboard.writeText('bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc');
+        document.getElementById('processingPoints').innerHTML = `
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
+            <div style="color: var(--green); font-weight: 700; margin-bottom: 10px;">✓ Address Copied!</div>
+            <div class="processing-spinner"></div>
+            <div style="color: var(--text-muted); margin-top: 10px;">Awaiting payment...</div>
+            <div style="color: var(--primary-red); font-size: 12px; margin-top: 10px;">Send $${pointsCost} USD to complete purchase</div>
+          </div>
+        `;
+      });
+
+      document.getElementById('paymentMethod').addEventListener('change', function() {
+        const method = this.value;
+        const info = document.getElementById('paymentInfo');
+        
+        if (method === 'Bitcoin (BTC)') {
+          info.innerHTML = `
+            <strong>Bitcoin Address:</strong><br>
+            bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc<br><br>
+            <button class="btn btn-secondary" id="copyPaymentAddr2" style="width: 100%; padding: 8px;">Copy Address</button>
+          `;
+          document.getElementById('copyPaymentAddr2').addEventListener('click', function() {
+            navigator.clipboard.writeText('bc1q5mtqsh96qmnesfrn0dtc9je2e2ts904pnpswvc');
+            alert('Bitcoin address copied!');
+          });
+        } else if (method === 'Ethereum (ETH)') {
+          info.innerHTML = `
+            <strong>Ethereum Address:</strong><br>
+            0x1234567890abcdef1234567890abcdef12345678<br><br>
+            <button class="btn btn-secondary" id="copyPaymentAddr2" style="width: 100%; padding: 8px;">Copy Address</button>
+          `;
+          document.getElementById('copyPaymentAddr2').addEventListener('click', function() {
+            navigator.clipboard.writeText('0x1234567890abcdef1234567890abcdef12345678');
+            alert('Ethereum address copied!');
+          });
+        } else if (method === 'Bank Card') {
+          info.innerHTML = `
+            <strong>Card Payment</strong><br>
+            Redirecting to secure payment gateway...<br>
+            <button class="btn btn-primary" id="proceedCardPayment" style="width: 100%; padding: 8px; margin-top: 10px;">Proceed to Payment</button>
+          `;
+          document.getElementById('proceedCardPayment').addEventListener('click', function() {
+            alert('Redirecting to payment gateway...');
+          });
+        }
+      });
+    }
+
+    function openContactSupport() {
+      showModal(`
+        <div class="modal-title">Contact Support</div>
+        <div class="modal-message">Get help from our support team</div>
+        <div class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Select Support Channel</label>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" onclick="window.open('https://www.cryptovault.support', '_blank'); hideModal();">📧 Email Support</button>
+          <button class="btn btn-primary" onclick="window.open('https://widget-page.smartsupp.com/widget/f659c5b3d565aafa73ba3a49d4ce0baf57cea73b?ss-chat-settings', '_blank'); hideModal();">💬 Live Chat</button>
+          <button class="btn btn-secondary" onclick="window.open('https://t.me/cryptovaultsupport', '_blank'); hideModal();">✈️ Telegram Support</button>
+          <button class="btn btn-secondary" onclick="hideModal()">Close</button>
+        </div>
+        <div class="modal-message" style="margin-top: 20px; font-size: 12px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+          <strong>Support Hours:</strong> 24/7 Available<br>
+          <strong>Average Response Time:</strong> 15 minutes<br>
+          <strong>Email:</strong> support@cryptovault.com
+        </div>
+      `);
+    }
+
+    // Deposit Button
+    document.getElementById('depositBtn').addEventListener('click', function() {
+      showModal(`
+        <div class="modal-title">Deposit Funds</div>
+        <div class="modal-message">Choose your deposit method:</div>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" id="depositCrypto">Cryptocurrency</button>
+          <button class="btn btn-primary" id="depositBank">Bank Transfer</button>
+          <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+        </div>
+      `);
+
+      document.getElementById('depositCrypto').addEventListener('click', function() {
+        showModal(`
+          <div class="modal-title">Deposit Cryptocurrency</div>
+          <div class="modal-form">
+            <div class="form-group">
+              <label class="form-label">Select Cryptocurrency</label>
+              <select class="form-select" id="depositCryptoType">
+                <option>Bitcoin (BTC)</option>
+                <option>Ethereum (ETH)</option>
+                <option>USDT (Tether)</option>
+                <option>BNB (Binance Coin)</option>
+              </select>
+            </div>
+          </div>
+          <div class="preview-box">
+            <strong>Deposit Address:</strong><br>
+            1A1z7agoat5SEspZqDE3dwYmwQJd5ctgFa<br><br>
+            <button class="btn btn-secondary" style="width: 100%; padding: 8px;" onclick="navigator.clipboard.writeText('1A1z7agoat5SEspZqDE3dwYmwQJd5ctgFa'); alert('Address copied!');">Copy Address</button>
+          </div>
+          <div class="modal-message" style="text-align: center; font-size: 12px;">Send crypto to this address. Deposits will be credited within 1-2 confirmations.</div>
+          <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="hideModal()">Close</button>
+          </div>
+        `);
+      });
+
+      document.getElementById('depositBank').addEventListener('click', function() {
+        showModal(`
+          <div class="modal-title">Bank Transfer Details - Iceland</div>
+          <div class="modal-form">
+            <div class="form-group">
+              <label class="form-label">Select Your Bank</label>
+              <select class="form-select" id="depositBankSelect">
+                ${icelandBanks.map((bank, i) => `<option value="${i}">${bank.name}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div id="bankTransferDetails"></div>
+          <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="hideModal()">Close</button>
+          </div>
+        `);
+
+        document.getElementById('depositBankSelect').addEventListener('change', function() {
+          const bank = icelandBanks[this.value];
+          document.getElementById('bankTransferDetails').innerHTML = `
+            <div class="preview-box">
+              <strong>Bank:</strong> ${bank.name}<br>
+              <strong>IBAN:</strong> ${bank.iban}<br>
+              <strong>Reference:</strong> DEPOSIT-${Date.now()}<br><br>
+              <button class="btn btn-secondary" style="width: 100%; padding: 8px;" onclick="navigator.clipboard.writeText('${bank.iban}'); alert('IBAN copied!');">Copy IBAN</button>
+            </div>
+            <div class="modal-message" style="text-align: center; font-size: 12px; margin-top: 16px;">Deposits typically arrive within 1-3 business days. Use your reference number in the transfer notes.</div>
+          `;
+        });
+
+        // Trigger change to show first bank
+        document.getElementById('depositBankSelect').dispatchEvent(new Event('change'));
+      });
+    });
   </script>
 </body>
 </html>
